@@ -1,10 +1,10 @@
-# Copyright (C) 2025 OrfeoStory
+# Copyright (C) 2025 Mofizul Islam
 # This file is distributed under the GPL-3.0-or-later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Wine Vendor WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
-"POT-Creation-Date: 2025-10-02 02:51:27+00:00\n"
+"POT-Creation-Date: 2025-10-04 05:38:02+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -42,39 +42,39 @@ msgstr ""
 msgid "Wine Vendor"
 msgstr ""
 
-#: src/Admin/Settings.php:51
+#: src/Admin/Settings.php:62
 msgid "General"
 msgstr ""
 
-#: src/Admin/Settings.php:52
+#: src/Admin/Settings.php:63
 msgid "Advanced"
 msgstr ""
 
-#: src/Admin/Settings.php:71
+#: src/Admin/Settings.php:82
 msgid "General Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:76
+#: src/Admin/Settings.php:87
 msgid "Enable Wine Vendor"
 msgstr ""
 
-#: src/Admin/Settings.php:77
+#: src/Admin/Settings.php:88
 msgid "Check this to enable to disable the wine vendor facilities."
 msgstr ""
 
-#: src/Admin/Settings.php:92
+#: src/Admin/Settings.php:103
 msgid "Advanced Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:97
+#: src/Admin/Settings.php:108
 msgid "Remove All Data on Uninstall"
 msgstr ""
 
-#: src/Admin/Settings.php:98
+#: src/Admin/Settings.php:109
 msgid "If enabled, all plugin data will be removed when you uninstall the plugin."
 msgstr ""
 
-#: src/Admin/Settings.php:135 src/Core/Base/Settings.php:175
+#: src/Admin/Settings.php:146 src/Core/Base/Settings.php:175
 msgid "Documentation"
 msgstr ""
 
@@ -106,8 +106,46 @@ msgstr ""
 msgid "Get Support"
 msgstr ""
 
-#: src/functions.php:41
-msgid "Settings"
+#: src/Core/WineVendorWoo.php:143 src/Core/WineVendorWoo.php:144
+msgid "Customers"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:207
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:250
+msgid "My Customers"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:253
+msgid "No customers found for your products."
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:258
+msgid "Customer ID"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:259
+msgid "Username"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:260
+msgid "Email"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:261
+msgid "First Name"
+msgstr ""
+
+#: src/Core/WineVendorWoo.php:262
+msgid "Last Name"
+msgstr ""
+
+#: src/Frontend/CartCustomizer.php:36
+msgid ""
+"Wine vendor and non-wine-vendor products can't be purchased together. The "
+"non-wine-vendor product has been removed from your cart."
 msgstr ""
 
 #. Plugin Name of the plugin/theme
@@ -116,14 +154,15 @@ msgstr ""
 
 #. Description of the plugin/theme
 msgid ""
-"Add flexible wholesale and tiered pricing to your WooCommerce store for "
-"bulk buyers and B2B customers."
+"Provides a custom dashboard for the Wine Vendor role with access to "
+"specific WooCommerce menus and data, including Products, Orders, Customers, "
+"Sales Reports, and Analytics."
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "OrfeoStory"
+msgid "Mofizul Islam"
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://orfeostory.com/"
+msgid "https://mofizul.com/"
 msgstr ""

@@ -140,8 +140,8 @@ class WineVendorWoo {
 
 		// Add Customers as a top-level menu, pointing to our custom page
 		add_menu_page(
-			__( 'Customers', 'woocommerce', 'wine-vendor-woocommerce' ),
-			__( 'Customers', 'woocommerce', 'wine-vendor-woocommerce' ),
+			__( 'Customers', 'wine-vendor-woocommerce' ),
+			__( 'Customers', 'wine-vendor-woocommerce' ),
 			'manage_woocommerce_customers',
 			'wine-vendor-customers',
 			[ $this, 'display_wine_vendor_customers_page' ],

@@ -47,3 +47,4 @@ codeception.yml
 .env
 /tests/_data/dump.sql
 .env.testing
+node_modules/

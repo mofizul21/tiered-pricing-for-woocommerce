@@ -1,1 +1,1 @@
-jQuery(document).ready(function(e){"use strict";console.log("Hello wholesale-pricing")});
+jQuery(document).ready(function(e){"use strict";console.log("Hello Wine Vendor")});
