@@ -1,0 +1,43 @@
+{
+  "name": "wine-vendor-woocommerce",
+  "title": "Wine Vendor WooCommerce",
+  "version": "1.0.0",
+  "description": "Provides a custom dashboard for the Wine Vendor role with access to specific WooCommerce menus and data, including Products, Orders, Customers, Sales Reports, and Analytics.",
+  "homepage": "https://mofizul.com/plugins/wine-vendor-woocommerce/",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "build": "wp-scripts build --webpack-src-dir=resources && grunt build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "rm -f wine-vendor-woocommerce.zip && zip -r wine-vendor-woocommerce.zip . -x '.babelrc' -x '.git/*' -x '.github/*' -x '.gitignore' -x '.gitattributes' -x 'node_modules/*' -x 'package.json' -x 'package-lock.json' -x 'webpack.config.js' -x 'Gruntfile.js' -x 'postcss.config.js' -x 'babel.config.js' -x 'resources/*' -x 'composer.json' -x  'composer.lock' -x 'vendor/squizlabs/*' -x 'vendor/wp-coding-standards/*' -x 'vendor/dealerdirect/*' -x 'vendor/phpcompatibility/*' -x 'tests/*' -x 'phpunit.xml' -x 'phpunit.xml.dist' -x 'phpcs.xml' -x '.editorconfig' -x '.eslintrc.js' -x '*.md' -x '.distignore' -x '.travis.yml' -x '*.zip' -x 'readme.txt' -x '*.DS_Store' -x '*/.DS_Store' -x 'Thumbs.db'",
+    "unminify:css": "cssunminifier assets/css/admin.css assets/css/admin.css && cssunminifier assets/css/admin-rtl.css assets/css/admin-rtl.css && cssunminifier assets/css/frontend.css assets/css/frontend.css && cssunminifier assets/css/frontend-rtl.css assets/css/frontend-rtl.css",
+    "unminify:js": " unminify assets/js/admin.js > assets/js/admin.tmp.js && mv assets/js/admin.tmp.js assets/js/admin.js && unminify assets/js/frontend.js > assets/js/frontend.tmp.js && mv assets/js/frontend.tmp.js assets/js/frontend.js",
+    "unminify:assets": "npm run unminify:css && npm run unminify:js",
+    "start": "wp-scripts start --webpack-src-dir=resources",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@lodder/time-grunt": "^4.0.0",
+    "@wordpress/scripts": "^30.15.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "grunt": "^1.6.1",
+    "grunt-checktextdomain": "^1.0.1",
+    "grunt-wp-i18n": "^1.0.3",
+    "grunt-wp-readme-to-markdown": "^2.1.0",
+    "load-grunt-tasks": "^5.1.0",
+    "webpack-remove-empty-scripts": "^1.0.4"
+  },
+  "browserslist": [
+    "> 0.1%",
+    "ie 8",
+    "ie 9"
+  ]
+}

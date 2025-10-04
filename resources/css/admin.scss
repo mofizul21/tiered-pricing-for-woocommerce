@@ -1,0 +1,75 @@
+// Common & Settings Sidebar CSS
+.forminp-radio ul {
+	margin: 0;
+	padding: 0;
+
+	li {
+		display: inline-block;
+		margin-right: 20px;
+		list-style: none;
+	}
+}
+.wrap.woocommerce {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	align-items: flex-start;
+
+	> .nav-tab-wrapper,
+	> .notice,
+	> h1 {
+		flex-basis: 100%;
+		width: 100%;
+	}
+
+	.column_1 {
+		flex: 0 0 70%;
+		max-width: 70%;
+	}
+
+	.column_2 {
+		flex: 0 0 20%;
+		max-width: 20%;
+		background: #fff;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+		h4 {
+			margin-top: 0;
+		}
+
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+
+			li {
+				margin-bottom: 10px;
+
+				a {
+					text-decoration: none;
+					color: #0073aa;
+
+					&:hover {
+						color: #005177;
+					}
+				}
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 782px) {
+	.wrap.woocommerce {
+		flex-direction: column;
+
+		.column_1,
+		.column_2 {
+			flex-basis: auto;
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+}
+
