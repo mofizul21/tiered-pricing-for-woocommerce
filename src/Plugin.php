@@ -140,5 +140,4 @@ final class Plugin {
     public function add_email_class( array $email_classes ): array {
         return $email_classes;
     }
-
 }
