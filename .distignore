@@ -1,0 +1,55 @@
+# Git repository files
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Node.js development files
+node_modules/
+package.json
+package-lock.json
+webpack.config.js
+gruntfile.js
+postcss.config.js
+babel.config.js
+
+# Source assets (only ship the compiled 'assets' directory)
+resources/
+
+# Composer files
+composer.json
+composer.lock
+
+# Composer dev packages
+vendor/squizlabs/
+vendor/wp-coding-standards/
+vendor/dealerdirect/
+vendor/phpcompatibility/
+
+# Test files
+tests/
+phpunit.xml
+phpunit.xml.dist
+
+# Code standards
+phpcs.xml
+.editorconfig
+.eslintrc.js
+
+# Other development files
+*.md
+.distignore
+.travis.yml
+*.zip
+readme.txt
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Include these directories
+!assets/
+!languages/
+!src/
+!templates/
+!vendor/

@@ -102,7 +102,6 @@ class WineVendorProducts {
 			// Reports
 			'view_woocommerce_reports',
 
-			// remove edit/delete globally; handled in map_meta_cap
 		];
 
 		foreach ( $caps as $cap ) {

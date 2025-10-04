@@ -142,15 +142,12 @@ class WineVendorWoo {
 		add_menu_page(
 			__( 'Customers', 'woocommerce', 'wine-vendor-woocommerce' ),
 			__( 'Customers', 'woocommerce', 'wine-vendor-woocommerce' ),
-			'manage_woocommerce_customers', // Capability for customers
-			'wine-vendor-customers', // Custom menu slug
-			[ $this, 'display_wine_vendor_customers_page' ], // Callback function
-			'dashicons-groups', // Icon for customers
-			'55.6' // Position
+			'manage_woocommerce_customers',
+			'wine-vendor-customers',
+			[ $this, 'display_wine_vendor_customers_page' ],
+			'dashicons-groups',
+			'55.6'
 		);
-
-		// We are NOT adding Orders and Sales Reports here.
-		// We expect WooCommerce to add them, and they should be filtered by our existing functions.
 	}
 
 	/**
