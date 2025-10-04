@@ -47,8 +47,3 @@ codeception.yml
 .env
 /tests/_data/dump.sql
 .env.testing
-
-# Language files
-
-
-# Build related files
