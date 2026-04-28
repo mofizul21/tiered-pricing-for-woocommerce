@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || exit;
 
 use TieredPricingForWooCommerce\Admin\Admin;
 use TieredPricingForWooCommerce\Admin\Menus;
+use TieredPricingForWooCommerce\Core\ProductColors;
 use TieredPricingForWooCommerce\Core\ProductSettings;
 use TieredPricingForWooCommerce\Core\WooCommerceStarter;
 use TieredPricingForWooCommerce\Frontend\ProductInfo;
@@ -74,6 +75,7 @@ final class Plugin {
             new Admin();
         }
 
+		new ProductColors();
 		new ProductSettings();
 		new WooCommerceStarter();
         new ProductInfo();

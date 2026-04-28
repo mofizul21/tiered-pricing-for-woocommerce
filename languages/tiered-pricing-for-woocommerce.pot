@@ -3,12 +3,330 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Tiered Pricing for WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://mofizul.com/\n"
-"POT-Creation-Date: 2026-04-28 00:00:00+00:00\n"
+"Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
+"POT-Creation-Date: 2026-04-28 16:41:28+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Domain: tiered-pricing-for-woocommerce\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Country: United States\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
+"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-Bookmarks: \n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: grunt-wp-i18n 1.0.4\n"
+
+#: src/Admin/Admin.php:72
+#. translators: %s: Plugin name
+msgid "Thank you for using %s!"
+msgstr ""
+
+#: src/Admin/Admin.php:94
+#. translators: %s: Plugin version number
+msgid "Version %s"
+msgstr ""
+
+#: src/Admin/Menus.php:41
+msgid "Tiered Pricing Settings"
+msgstr ""
+
+#: src/Admin/Menus.php:42
+msgid "Tiered Pricing"
+msgstr ""
+
+#: src/Admin/Settings.php:55
+msgid "General"
+msgstr ""
+
+#: src/Admin/Settings.php:56
+msgid "Advanced"
+msgstr ""
+
+#: src/Admin/Settings.php:75
+msgid "General Settings"
+msgstr ""
+
+#: src/Admin/Settings.php:77
+msgid "Starter options for future tiered-pricing development."
+msgstr ""
+
+#: src/Admin/Settings.php:81
+msgid "Enable Starter Hooks"
+msgstr ""
+
+#: src/Admin/Settings.php:82
+msgid "Loads the product settings fields and WooCommerce starter integration."
+msgstr ""
+
+#: src/Admin/Settings.php:88
+msgid "Enable Frontend Table"
+msgstr ""
+
+#: src/Admin/Settings.php:89
+msgid "Displays a starter tier table on eligible single product pages."
+msgstr ""
+
+#: src/Admin/Settings.php:104
+msgid "Advanced Settings"
+msgstr ""
+
+#: src/Admin/Settings.php:109
+msgid "Remove All Data on Uninstall"
+msgstr ""
+
+#: src/Admin/Settings.php:110
+msgid ""
+"If enabled, starter plugin options and product meta will be removed during "
+"uninstall."
+msgstr ""
+
+#: src/Admin/Settings.php:147
+msgid "Documentation"
+msgstr ""
+
+#: src/Core/Base/Settings.php:51
+msgid "You do not have permission to save these settings."
+msgstr ""
+
+#: src/Core/Base/Settings.php:62
+msgid "Your settings have been saved."
+msgstr ""
+
+#: src/Core/Base/Settings.php:148 src/Core/Base/Settings.php:149
+msgid "Save changes"
+msgstr ""
+
+#: src/Core/Base/Settings.php:156
+msgid "Starter Notes"
+msgstr ""
+
+#: src/Core/Base/Settings.php:159
+msgid ""
+"This plugin is now a clean WooCommerce starter scaffold for tiered pricing "
+"features."
+msgstr ""
+
+#: src/Core/Base/Settings.php:162
+msgid ""
+"Use the product edit screen to enable the starter tier settings on "
+"individual products."
+msgstr ""
+
+#: src/Core/Base/Settings.php:165
+msgid ""
+"The pricing calculation logic has intentionally been removed so new "
+"requirements can be added cleanly later."
+msgstr ""
+
+#: src/Core/ProductColors.php:20 src/Core/ProductColors.php:28
+msgid "Colors"
+msgstr ""
+
+#: src/Core/ProductColors.php:21 src/Frontend/ProductPricingTable.php:119
+#: src/Frontend/ProductPricingTable.php:354
+msgid "Color"
+msgstr ""
+
+#: src/Core/ProductColors.php:22
+msgid "Search Colors"
+msgstr ""
+
+#: src/Core/ProductColors.php:23
+msgid "All Colors"
+msgstr ""
+
+#: src/Core/ProductColors.php:24
+msgid "Edit Color"
+msgstr ""
+
+#: src/Core/ProductColors.php:25
+msgid "Update Color"
+msgstr ""
+
+#: src/Core/ProductColors.php:26
+msgid "Add New Color"
+msgstr ""
+
+#: src/Core/ProductColors.php:27
+msgid "New Color Name"
+msgstr ""
+
+#: src/Core/ProductSettings.php:41
+msgid "Enable pricing table"
+msgstr ""
+
+#: src/Core/ProductSettings.php:42
+msgid ""
+"Use the custom quantity pricing table and order builder on the single "
+"product page."
+msgstr ""
+
+#: src/Core/ProductSettings.php:47
+msgid "Pricing table"
+msgstr ""
+
+#: src/Core/ProductSettings.php:51
+msgid "Minimum quantity"
+msgstr ""
+
+#: src/Core/ProductSettings.php:52
+msgid "Your price (each)"
+msgstr ""
+
+#: src/Core/ProductSettings.php:53
+msgid "Actions"
+msgstr ""
+
+#: src/Core/ProductSettings.php:61
+msgid "Add Row"
+msgstr ""
+
+#: src/Core/ProductSettings.php:64
+msgid ""
+"Add one row for each quantity break. The first row is the minimum order "
+"quantity."
+msgstr ""
+
+#: src/Core/ProductSettings.php:70
+msgid "Table note"
+msgstr ""
+
+#: src/Core/ProductSettings.php:71
+msgid "Optional text displayed below the pricing table on the frontend."
+msgstr ""
+
+#: src/Core/ProductSettings.php:79 src/Frontend/ProductInfo.php:67
+msgid "Themes"
+msgstr ""
+
+#: src/Core/ProductSettings.php:80 src/Core/ProductSettings.php:89
+#: src/Core/ProductSettings.php:98 src/Core/ProductSettings.php:107
+#: src/Core/ProductSettings.php:116
+msgid "Additional product information tab content."
+msgstr ""
+
+#: src/Core/ProductSettings.php:88 src/Frontend/ProductInfo.php:68
+msgid "Imprint"
+msgstr ""
+
+#: src/Core/ProductSettings.php:97 src/Frontend/ProductInfo.php:69
+msgid "Additional"
+msgstr ""
+
+#: src/Core/ProductSettings.php:106 src/Frontend/ProductInfo.php:70
+msgid "Options"
+msgstr ""
+
+#: src/Core/ProductSettings.php:115 src/Frontend/ProductInfo.php:71
+msgid "Delivery"
+msgstr ""
+
+#: src/Core/ProductSettings.php:137
+msgid "Remove"
+msgstr ""
+
+#: src/Core/WooCommerceStarter.php:26
+msgid "Settings"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:86
+msgid "Quantity"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:94
+msgid "Your Price (each)"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:108
+msgid ""
+"Assign at least one Color term to this product to enable ordering from the "
+"pricing table."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:118
+msgid "Qty*"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:131
+#. translators: %s: minimum quantity
+msgid "Minimum total quantity for this product is %s across all rows."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:137
+msgid "Add to cart"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:190
+msgid "Select color"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:211
+msgid "Unable to add this product to the cart. Please refresh and try again."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:219
+msgid "This product is not available for custom pricing."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:254
+msgid "Each order row must have a quantity greater than zero."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:259
+msgid "Please choose a valid color for each order row."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:272
+msgid "Please add at least one quantity and color combination."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:280
+#. translators: 1: total quantity, 2: minimum quantity
+msgid "Minimum total quantity is %2$s. Your current total is %1$s."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:292
+msgid "Unable to match the total quantity to a pricing tier."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:312
+msgid "A row could not be added to the cart."
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:361
+msgid "Unit Price"
+msgstr ""
+
+#: src/Plugin.php:153
+msgid ""
+"Tiered Pricing for WooCommerce requires WooCommerce to be installed and "
+"active."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Tiered Pricing for WooCommerce"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Offer tiered, quantity-based pricing on WooCommerce products. Automatically "
+"adjusts the per-unit price as customers increase quantity — for example: "
+"$5.00 each for 10 units, $4.00 each for 30 units. Supports unlimited "
+"pricing tiers per product."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Mofizul Islam"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://mofizul.com/"
+msgstr ""

@@ -103,9 +103,15 @@ class Admin {
 	 * @return void
 	 */
 	public function enqueue_admin_assets(): void {
-		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return;
+		}
+
+		if ( in_array( $screen->id, $this->get_screen_ids(), true ) || 'product' === $screen->id ) {
 			wp_enqueue_style( 'tpfw-admin-style', plugins_url( 'assets/css/admin.css', TPFW_PLUGIN_FILE ), [], TPFW_VERSION );
-			wp_enqueue_script( 'tpfw-admin-script', plugins_url( 'assets/js/admin.js', TPFW_PLUGIN_FILE ), [ 'jquery' ], TPFW_VERSION, true );
+			wp_enqueue_script( 'tpfw-admin-script', plugins_url( 'resources/js/admin.js', TPFW_PLUGIN_FILE ), [ 'jquery' ], TPFW_VERSION, true );
 		}
 	}
 

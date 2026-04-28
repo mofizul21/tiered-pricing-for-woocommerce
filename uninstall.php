@@ -27,6 +27,12 @@ $products = get_posts(
 );
 
 foreach ( $products as $product_id ) {
-	delete_post_meta( $product_id, '_tpfw_enabled' );
-	delete_post_meta( $product_id, '_tpfw_tier_rules' );
+	delete_post_meta( $product_id, '_tpfw_enable_pricing_table' );
+	delete_post_meta( $product_id, '_tpfw_pricing_table' );
+	delete_post_meta( $product_id, '_tpfw_pricing_note' );
+	delete_post_meta( $product_id, '_tpfw_themes' );
+	delete_post_meta( $product_id, '_tpfw_imprint' );
+	delete_post_meta( $product_id, '_tpfw_additional' );
+	delete_post_meta( $product_id, '_tpfw_options' );
+	delete_post_meta( $product_id, '_tpfw_delivery' );
 }
