@@ -24,12 +24,12 @@ jQuery(function ($) {
 		});
 
 		if (!hasAtLeastOneRow) {
-			window.alert('Please add at least one quantity and color combination.');
+			window.alert('Please fill out the Qty.');
 			return false;
 		}
 
 		if (totalQuantity < minimumQuantity) {
-			window.alert('Minimum total quantity is ' + minimumQuantity + '. Your current total is ' + totalQuantity + '.');
+			window.alert('The total quantity must be at least ' + minimumQuantity + '.');
 			return false;
 		}
 

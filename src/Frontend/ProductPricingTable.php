@@ -164,6 +164,40 @@ class ProductPricingTable {
 			}
 			window.tpfwQtyChanged   = function ( el ) { var f = el.closest( '.tpfw-order-form' ); if ( f ) tpfwEnsureRow( f ); };
 			window.tpfwColorChanged = function ( el ) { var f = el.closest( '.tpfw-order-form' ); if ( f ) tpfwEnsureRow( f ); };
+
+			var forms = document.querySelectorAll( '.tpfw-order-form:not([data-tpfw-submit])' );
+			for ( var fi = 0; fi < forms.length; fi++ ) {
+				forms[ fi ].setAttribute( 'data-tpfw-submit', '1' );
+				forms[ fi ].addEventListener( 'submit', function ( e ) {
+					var form   = e.currentTarget;
+					var iface  = form.closest( '.tpfw-pricing-interface' );
+					var minQty = iface ? ( parseInt( iface.getAttribute( 'data-min-quantity' ), 10 ) || 0 ) : 0;
+					var rows   = Array.prototype.slice.call( form.querySelectorAll( '.tpfw-order-row' ) );
+					var total  = 0;
+					var hasQty = false;
+
+					for ( var i = 0; i < rows.length; i++ ) {
+						var qty   = ( rows[ i ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
+						var color = ( rows[ i ].querySelector( '.tpfw-color-select' ).value || '' ).trim();
+						if ( ! qty && ! color ) {
+							rows[ i ].parentNode && rows[ i ].parentNode.removeChild( rows[ i ] );
+						} else {
+							var n = parseInt( qty, 10 );
+							if ( ! isNaN( n ) && n > 0 ) { hasQty = true; total += n; }
+						}
+					}
+
+					if ( ! hasQty ) {
+						e.preventDefault();
+						window.alert( 'Please fill out the Qty.' );
+						return;
+					}
+					if ( total < minQty ) {
+						e.preventDefault();
+						window.alert( 'The total quantity must be at least ' + minQty + '.' );
+					}
+				} );
+			}
 		})();
 		</script>
 		<?php
