@@ -1,6 +1,8 @@
 <?php
-namespace WineVendorWooCommerce\Admin;
-use WineVendorWooCommerce\Core\Base\Settings as BaseSettings;
+namespace TieredPricingForWooCommerce\Admin;
+
+use TieredPricingForWooCommerce\Core\Base\Settings as BaseSettings;
+
 defined( 'ABSPATH' ) || exit;
 /**
  * The main settings class for the plugin.
@@ -22,33 +24,24 @@ class Settings extends BaseSettings {
 	 * @return mixed The sanitized value.
 	 *@since 1.0.0
 	 */
-    public function sanitize_option( $value, array $option, $raw_value ) {
-        // Only sanitize our own options.
-        if ( empty( $option['id'] ) || strpos( $option['id'], 'wvwc_' ) !== 0 ) {
-            return $value;
-        }
+	public function sanitize_option( $value, array $option, $raw_value ) {
+		if ( empty( $option['id'] ) || 0 !== strpos( $option['id'], 'tpfw_' ) ) {
+			return $value;
+		}
 
-        $type = isset( $option['type'] ) ? $option['type'] : 'text';
+		$type = $option['type'] ?? 'text';
 
-        // Sanitize color fields.
-        if ( $type === 'text' && ! empty( $option['class'] ) && $option['class'] === 'color-picker' ) {
-            return sanitize_hex_color( $raw_value );
-        }
-
-        switch ( $type ) {
-            case 'number':
-                return intval( $raw_value );
-
-            case 'multiselect':
-                return is_array( $raw_value ) ? array_map( 'sanitize_text_field', $raw_value ) : [];
-
-            case 'checkbox':
-                return ( isset( $raw_value ) && $raw_value === '1' ) ? 'yes' : 'no';
-
-            default:
-                return sanitize_text_field( $raw_value );
-        }
-    }
+		switch ( $type ) {
+			case 'checkbox':
+				return ( isset( $raw_value ) && '1' === $raw_value ) ? 'yes' : 'no';
+			case 'textarea':
+				return sanitize_textarea_field( $raw_value );
+			case 'number':
+				return absint( $raw_value );
+			default:
+				return sanitize_text_field( $raw_value );
+		}
+	}
 
 
     /**
@@ -59,8 +52,8 @@ class Settings extends BaseSettings {
 	 */
 	public function get_tabs(): array {
 		return [
-			'general'  				=> esc_html__( 'General', 'wine-vendor-woocommerce' ),
-			'advanced' 				=> esc_html__( 'Advanced', 'wine-vendor-woocommerce' ),
+			'general'  => esc_html__( 'General', 'tiered-pricing-for-woocommerce' ),
+			'advanced' => esc_html__( 'Advanced', 'tiered-pricing-for-woocommerce' ),
 		];
 	}
 
@@ -79,20 +72,28 @@ class Settings extends BaseSettings {
 			case 'general':
 				$settings = [
 					array(
-						'title' => esc_html__( 'General Settings', 'wine-vendor-woocommerce' ),
+						'title' => esc_html__( 'General Settings', 'tiered-pricing-for-woocommerce' ),
 						'type'  => 'title',
-						'id'    => 'wvwc_general_settings',
+						'desc'  => esc_html__( 'Starter options for future tiered-pricing development.', 'tiered-pricing-for-woocommerce' ),
+						'id'    => 'tpfw_general_settings',
 					),
 					array(
-						'title'   => esc_html__( 'Enable Wine Vendor', 'wine-vendor-woocommerce' ),
-						'desc'    => esc_html__( 'Check this to enable to disable the wine vendor facilities.', 'wine-vendor-woocommerce' ),
-						'id'      => 'wvwc_disable_auto_approval',
+						'title'   => esc_html__( 'Enable Starter Hooks', 'tiered-pricing-for-woocommerce' ),
+						'desc'    => esc_html__( 'Loads the product settings fields and WooCommerce starter integration.', 'tiered-pricing-for-woocommerce' ),
+						'id'      => 'tpfw_enable_plugin',
 						'type'    => 'checkbox',
-						'default' => 'no',
+						'default' => 'yes',
+					),
+					array(
+						'title'   => esc_html__( 'Enable Frontend Table', 'tiered-pricing-for-woocommerce' ),
+						'desc'    => esc_html__( 'Displays a starter tier table on eligible single product pages.', 'tiered-pricing-for-woocommerce' ),
+						'id'      => 'tpfw_enable_frontend_display',
+						'type'    => 'checkbox',
+						'default' => 'yes',
 					),
 					[
 						'type' => 'sectionend',
-						'id'   => 'wvwc_general_settings',
+						'id'   => 'tpfw_general_settings',
 					],
 				];
 				break;
@@ -100,20 +101,20 @@ class Settings extends BaseSettings {
 			case 'advanced':
 				$settings = [
 					[
-						'title' 	=> esc_html__( 'Advanced Settings', 'wine-vendor-woocommerce' ),
-						'type'  	=> 'title',
-						'id'    	=> 'wvwc_advanced_settings',
+						'title' => esc_html__( 'Advanced Settings', 'tiered-pricing-for-woocommerce' ),
+						'type'  => 'title',
+						'id'    => 'tpfw_advanced_settings',
 					],
 					[
-						'title'   	=> esc_html__( 'Remove All Data on Uninstall', 'wine-vendor-woocommerce' ),
-						'desc'    	=> esc_html__( 'If enabled, all plugin data will be removed when you uninstall the plugin.', 'wine-vendor-woocommerce' ),
-						'id'      	=> 'wvwc_delete_data',
-						'type'    	=> 'checkbox',
-						'default' 	=> 'no',
+						'title'   => esc_html__( 'Remove All Data on Uninstall', 'tiered-pricing-for-woocommerce' ),
+						'desc'    => esc_html__( 'If enabled, starter plugin options and product meta will be removed during uninstall.', 'tiered-pricing-for-woocommerce' ),
+						'id'      => 'tpfw_delete_data',
+						'type'    => 'checkbox',
+						'default' => 'no',
 					],
 					[
-						'type' 		=> 'sectionend',
-						'id'   		=> 'wvwc_advanced_settings',
+						'type' => 'sectionend',
+						'id'   => 'tpfw_advanced_settings',
 					],
 				];
 				break;
@@ -128,9 +129,9 @@ class Settings extends BaseSettings {
 	 * @return void
 	 * */
 	public function output(): void
-    {
-        parent::output();
-    }
+	{
+		parent::output();
+	}
 
 	/**
 	 * Overrides the parent method to add a documentation link.
@@ -140,10 +141,10 @@ class Settings extends BaseSettings {
 	 */
 	public function get_extra_tabs(): array {
 		$extra_tabs = [];
-		$docs_url = WVWC()->docs_url;
+		$docs_url = TPFW()->docs_url;
 		if ( $docs_url ) {
 			$extra_tabs['documentation'] = [
-				'label' => esc_html__( 'Documentation', 'wine-vendor-woocommerce' ),
+				'label' => esc_html__( 'Documentation', 'tiered-pricing-for-woocommerce' ),
 				'url'   => esc_url( $docs_url ),
 			];
 		}

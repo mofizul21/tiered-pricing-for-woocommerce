@@ -1,11 +1,11 @@
 {
-  "name": "mofizul/wine-vendor-woocommerce",
-  "description": "Provides a custom dashboard for the Wine Vendor role with access to specific WooCommerce menus and data, including Products, Orders, Customers, Sales Reports, and Analytics.",
+  "name": "mofizul/tiered-pricing-for-woocommerce",
+  "description": "Starter WooCommerce plugin scaffold for building tiered pricing features.",
   "version": "1.0.0",
   "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
-      "WineVendorWooCommerce\\": "src/"
+      "TieredPricingForWooCommerce\\": "src/"
     }
   },
   "authors": [

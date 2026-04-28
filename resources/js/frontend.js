@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
 	'use strict';
 
-	console.log('Hello Wine Vendor');
+	console.log('Tiered Pricing frontend loaded.');
 });

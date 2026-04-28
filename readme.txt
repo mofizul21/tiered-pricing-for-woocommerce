@@ -1,6 +1,6 @@
-=== Wine Vendor WooCommerce ===
+=== Tiered Pricing for WooCommerce ===
 Contributors: mofizul
-Tags: woocommerce, vendors, wine vendor
+Tags: woocommerce, tiered pricing, quantity pricing, wholesale pricing
 Requires at least: 5.2
 Tested up to: 6.8
 Stable tag: 1.0.0
@@ -10,53 +10,55 @@ WC tested up to: 10.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Provides a custom dashboard for the Wine Vendor role with access to specific WooCommerce menus and data, including Products, Orders, Customers, Sales Reports, and Analytics.
+Starter plugin scaffold for building tiered pricing features on WooCommerce products.
 
 == Description ==
 
-This plugin creates a dedicated "Wine Vendor" user role in your WooCommerce store. It provides a simplified and secure dashboard for your vendors, giving them access only to the tools and data they need to manage their products and sales.
+This plugin has been cleaned and converted into a starter WooCommerce extension for tiered pricing development.
 
-When a customer adds a product from a wine vendor to their cart, they can only check out with products from that same vendor. This ensures a streamlined purchasing process and avoids conflicts between different vendors' products in a single order.
+It includes:
 
-Additionally, all products sold by wine vendors are automatically assigned a "Zero Rate" tax class, simplifying tax management for both you and your vendors.
+* A proper WooCommerce plugin bootstrap.
+* A WooCommerce submenu settings page.
+* Starter product-level fields for enabling tiered pricing and entering pricing tiers.
+* A basic frontend pricing table renderer for single product pages.
+* Clean placeholders for future pricing calculation logic.
 
 == Features ==
 
-*   **"Wine Vendor" User Role:** Creates a dedicated "Wine Vendor" user role with specific permissions.
-*   **Restricted Admin Access:** Provides a simplified dashboard for Wine Vendors, limiting access to only essential WooCommerce sections like Products, Orders, and Reports.
-*   **Vendor-Specific Products:** Allows vendors to manage their own product listings.
-*   **Isolated Product Categories:** Vendors can create and manage their own product categories and tags, which are kept separate from those of other vendors.
-*   **Cart & Checkout Rules:** Prevents customers from purchasing products from different vendors in the same order.
-*   **Custom Tax Handling:** Applies a "Zero Rate" tax class to all products sold by Wine Vendors.
+* Product-level starter fields for tiered pricing data.
+* WooCommerce admin settings page.
+* Frontend tier table output.
+* HPOS compatibility declaration.
 
 == Installation ==
 
-1.  Upload the plugin files to the `/wp-content/plugins/wine-vendor-woocommerce` directory, or install the plugin through the WordPress plugins screen directly.
+1.  Upload the plugin files to the `/wp-content/plugins/tiered-pricing-for-woocommerce` directory, or install the plugin through the WordPress plugins screen directly.
 2.  Activate the plugin through the 'Plugins' screen in WordPress.
-3.  Assign the 'Wine Vendor' role to your vendors.
+3.  Make sure WooCommerce is installed and active.
 
 == Frequently Asked Questions ==
 
-= Can a customer buy from multiple vendors at once? =
+= Does this plugin calculate tiered prices already? =
 
-No. To ensure a smooth checkout process, customers can only purchase products from a single vendor at a time.
+Not yet. This is now a starter development plugin with product fields and frontend output only.
 
-= How are taxes handled for wine vendor products? =
+= Where do I enter tier rules? =
 
-All products sold by users with the "Wine Vendor" role are automatically assigned the "Zero Rate" tax class.
+Open a WooCommerce product, enable tiered pricing in the pricing section, and add one rule per line using `quantity:price`.
 
-= What can a Wine Vendor see and do? =
+= What is included now? =
 
-Wine Vendors have a simplified dashboard with access to manage their products, view their orders, and see sales reports. They cannot access other areas of the WordPress admin.
+The plugin includes only starter architecture, settings, product fields, and a display table so future commands can add pricing logic cleanly.
 
 == Screenshots ==
 
-1. The simplified dashboard for Wine Vendors.
+1. Tier settings in the WooCommerce product editor.
 
 == Changelog ==
 
-= 1.0.0 - 2025-10-04 =
-* Initial release.
+= 1.0.0 =
+* Converted legacy inherited code into a clean WooCommerce starter scaffold for tiered pricing.
 
 == Upgrade Notice ==
 

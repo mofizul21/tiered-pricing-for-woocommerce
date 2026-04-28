@@ -1,1 +1,1 @@
-jQuery(document).ready(function(e){"use strict";console.log("Hello Wine Vendor")});
+jQuery(document).ready(function($){"use strict";console.log("Tiered Pricing frontend loaded.");});

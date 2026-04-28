@@ -13,7 +13,7 @@ module.exports = function( grunt ) {
 
 		addtextdomain: {
 			options: {
-				text_domain: 'wine-vendor-woocommerce',
+				text_domain: 'tiered-pricing-for-woocommerce',
 			},
 			target: {
 				files: {
@@ -29,7 +29,7 @@ module.exports = function( grunt ) {
 
 		checktextdomain: {
 			options: {
-				text_domain: 'wine-vendor-woocommerce',
+				text_domain: 'tiered-pricing-for-woocommerce',
 				keywords: [
 					'__:1,2d',
 					'_e:1,2d',
@@ -63,8 +63,8 @@ module.exports = function( grunt ) {
 			target: {
 				options: {
 					domainPath: 'languages',
-					mainFile: 'wine-vendor-woocommerce.php',
-					potFilename: 'wine-vendor-woocommerce.pot',
+					mainFile: 'tiered-pricing-for-woocommerce.php',
+					potFilename: 'tiered-pricing-for-woocommerce.pot',
 					type: 'wp-plugin',
 					potHeaders: {
 						'report-msgid-bugs-to': 'https://mofizul.com/support/',

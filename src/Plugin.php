@@ -1,13 +1,14 @@
 <?php
-namespace WineVendorWooCommerce;
+namespace TieredPricingForWooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
-use WineVendorWooCommerce\Admin\Admin;
-use WineVendorWooCommerce\Admin\Menus;
-use WineVendorWooCommerce\Core\WineVendorProducts;
-use WineVendorWooCommerce\Core\WineVendorWoo;
-use WineVendorWooCommerce\Frontend\CartCustomizer;
+use TieredPricingForWooCommerce\Admin\Admin;
+use TieredPricingForWooCommerce\Admin\Menus;
+use TieredPricingForWooCommerce\Core\ProductSettings;
+use TieredPricingForWooCommerce\Core\WooCommerceStarter;
+use TieredPricingForWooCommerce\Frontend\ProductInfo;
+use TieredPricingForWooCommerce\Frontend\ProductPricingTable;
 
 /**
  * Plugin class
@@ -60,22 +61,23 @@ final class Plugin {
     public function init( array $data ): void {
         $this->data = $data;
 
-        if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+        add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
+        $this->load_textdomain();
+
+        if ( ! $this->is_woocommerce_active() ) {
+            add_action( 'admin_notices', [ $this, 'render_missing_woocommerce_notice' ] );
             return;
         }
 
-        add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
-        add_filter( 'woocommerce_email_classes', [ $this, 'add_email_class' ] );
-        $this->load_textdomain();
-
-        // Load classes for admin only
-        if(is_admin()){
+        if ( is_admin() ) {
             new Menus();
             new Admin();
-			new WineVendorProducts();
-			new WineVendorWoo();
         }
-        new CartCustomizer();
+
+		new ProductSettings();
+		new WooCommerceStarter();
+        new ProductInfo();
+        new ProductPricingTable();
     }
 
     /**
@@ -116,7 +118,7 @@ final class Plugin {
      */
     public function declare_hpos_compatibility(): void {
         if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', WVWC_PLUGIN_FILE, true );
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', TPFW_PLUGIN_FILE, true );
         }
     }
 
@@ -127,17 +129,27 @@ final class Plugin {
      * @return void
      */
     public function load_textdomain(): void {
-        load_plugin_textdomain( 'wine-vendor-woocommerce', false, dirname( plugin_basename( WVWC_PLUGIN_FILE ) ) . '/languages/' );
+        load_plugin_textdomain( TPFW_TEXT_DOMAIN, false, dirname( plugin_basename( TPFW_PLUGIN_FILE ) ) . '/languages/' );
     }
 
     /**
-     * Add email class
-     *
-     * @since 1.0.0
-     * @param array $email_classes
-     * @return array
+     * Check whether WooCommerce is active.
      */
-    public function add_email_class( array $email_classes ): array {
-        return $email_classes;
+    private function is_woocommerce_active(): bool {
+        return class_exists( 'WooCommerce' );
+    }
+
+    /**
+     * Render an admin notice when WooCommerce is missing.
+     */
+    public function render_missing_woocommerce_notice(): void {
+        if ( ! current_user_can( 'activate_plugins' ) ) {
+            return;
+        }
+        ?>
+        <div class="notice notice-error">
+            <p><?php esc_html_e( 'Tiered Pricing for WooCommerce requires WooCommerce to be installed and active.', 'tiered-pricing-for-woocommerce' ); ?></p>
+        </div>
+        <?php
     }
 }

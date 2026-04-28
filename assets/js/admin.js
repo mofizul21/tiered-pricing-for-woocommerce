@@ -1,1 +1,1 @@
-jQuery(function(o){"use strict";console.log("Code is poetry.")});
+jQuery(function($){"use strict";console.log("Tiered Pricing admin loaded.");});

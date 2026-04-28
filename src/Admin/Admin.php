@@ -1,5 +1,5 @@
 <?php
-namespace WineVendorWooCommerce\Admin;
+namespace TieredPricingForWooCommerce\Admin;
 
 // Don't call the file directly.
 defined( 'ABSPATH' ) || exit;
@@ -18,7 +18,7 @@ class Admin {
 	 * Constructor. Hooks into WordPress.
 	 */
 	public function __construct() {
-		$this->plugin = WVWC();
+		$this->plugin = TPFW();
 
 		add_filter( 'woocommerce_screen_ids', [ $this, 'add_screen_ids' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
@@ -64,12 +64,12 @@ class Admin {
 	 */
 	public function admin_footer_text( string $text ): string {
 		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
-			$plugin_data = get_plugin_data( WVWC_PLUGIN_FILE );
+			$plugin_data = get_plugin_data( TPFW_PLUGIN_FILE );
 			$plugin_name = $plugin_data['Name'];
 
 			$text = sprintf(
 			/* translators: %s: Plugin name */
-				wp_kses( __( 'Thank you for using %s!', 'wine-vendor-woocommerce' ), [ 'strong' => [] ] ),
+				wp_kses( __( 'Thank you for using %s!', 'tiered-pricing-for-woocommerce' ), [ 'strong' => [] ] ),
 				'<strong>' . esc_html( $plugin_name ) . '</strong>'
 			);
 		}
@@ -87,11 +87,11 @@ class Admin {
 	public function update_footer( string $text ): string {
 
 		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
-			$plugin_data = get_plugin_data( WVWC_PLUGIN_FILE );
+			$plugin_data = get_plugin_data( TPFW_PLUGIN_FILE );
 			$version = $plugin_data['Version'];
 
 			/* translators: %s: Plugin version number */
-			$text = sprintf( esc_html__( 'Version %s', 'wine-vendor-woocommerce' ), $version );
+			$text = sprintf( esc_html__( 'Version %s', 'tiered-pricing-for-woocommerce' ), $version );
 		}
 		return $text;
 	}
@@ -103,11 +103,21 @@ class Admin {
 	 * @return void
 	 */
 	public function enqueue_admin_assets(): void {
-		// Only load the assets on our specific admin page
 		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
-			wp_enqueue_style( 'wvwc-admin-style', plugins_url( 'assets/css/admin.css', WVWC_PLUGIN_FILE ), [], WVWC_VERSION );
-			wp_enqueue_script( 'wvwc-admin-script', plugins_url( 'assets/js/admin.js', WVWC_PLUGIN_FILE ), ['jquery'],
-				WVWC_VERSION, true );
+			wp_enqueue_style( 'tpfw-admin-style', plugins_url( 'assets/css/admin.css', TPFW_PLUGIN_FILE ), [], TPFW_VERSION );
+			wp_enqueue_script( 'tpfw-admin-script', plugins_url( 'assets/js/admin.js', TPFW_PLUGIN_FILE ), [ 'jquery' ], TPFW_VERSION, true );
 		}
+	}
+
+	/**
+	 * Enqueue frontend assets when the starter display is enabled.
+	 */
+	public function enqueue_frontend_assets(): void {
+		if ( 'yes' !== get_option( 'tpfw_enable_frontend_display', 'yes' ) ) {
+			return;
+		}
+
+		wp_enqueue_style( 'tpfw-frontend-style', plugins_url( 'assets/css/frontend.css', TPFW_PLUGIN_FILE ), [], TPFW_VERSION );
+		wp_enqueue_script( 'tpfw-frontend-script', plugins_url( 'assets/js/frontend.js', TPFW_PLUGIN_FILE ), [ 'jquery' ], TPFW_VERSION, true );
 	}
 }

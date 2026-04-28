@@ -2,15 +2,14 @@
 /**
  * Useful functions.
  *
- * @package WineVendorWooCommerce
+ * @package TieredPricingForWooCommerce
  * @since 1.0.0
  */
 
-
-use WineVendorWooCommerce\Plugin;
+use TieredPricingForWooCommerce\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
@@ -19,7 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  * @return Plugin
  */
-function WVWC(): Plugin
-{ // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-    return Plugin::instance();
+function TPFW(): Plugin { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+	return Plugin::instance();
 }

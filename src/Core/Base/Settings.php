@@ -1,5 +1,5 @@
 <?php
-namespace WineVendorWooCommerce\Core\Base;
+namespace TieredPricingForWooCommerce\Core\Base;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,13 +42,13 @@ abstract class Settings {
      * @return void
      * */
     public function save(): void {
-        $nonce = isset( $_POST['wvwc_settings_nonce'] ) ? sanitize_key( $_POST['wvwc_settings_nonce'] ) : '';
-        if ( ! wp_verify_nonce( $nonce, 'wvwc_save_settings' ) ) {
+        $nonce = isset( $_POST['tpfw_settings_nonce'] ) ? sanitize_key( wp_unslash( $_POST['tpfw_settings_nonce'] ) ) : '';
+        if ( ! wp_verify_nonce( $nonce, 'tpfw_save_settings' ) ) {
             return;
         }
 
         if ( ! current_user_can( 'manage_woocommerce' ) ) {
-            wp_die( esc_html__( 'You do not have permission to save these settings.', 'wine-vendor-woocommerce' ) );
+            wp_die( esc_html__( 'You do not have permission to save these settings.', 'tiered-pricing-for-woocommerce' ) );
         }
 
         $current_tab = $this->get_current_tab();
@@ -57,9 +57,9 @@ abstract class Settings {
         \WC_Admin_Settings::save_fields( $settings );
 
         add_settings_error(
-            'wvwc_settings',
+            'tpfw_settings',
             'settings_updated',
-            esc_html__( 'Your settings have been saved.', 'wine-vendor-woocommerce' ),
+            esc_html__( 'Your settings have been saved.', 'tiered-pricing-for-woocommerce' ),
             'success'
         );
     }
@@ -86,7 +86,7 @@ abstract class Settings {
         $extra_tabs = $this->get_extra_tabs();
         $current_tab = $this->get_current_tab();
 
-        $base_url = WVWC()->settings_url;
+        $base_url = TPFW()->settings_url;
         ?>
         <nav class="nav-tab-wrapper woo-nav-tab-wrapper">
             <?php foreach ( $tabs as $slug => $label ) : ?>
@@ -111,12 +111,12 @@ abstract class Settings {
         <?php
     }
 
-    public function hide_unrelated_notices() {
+	public function hide_unrelated_notices() {
 		ob_start();
 		do_action( 'admin_notices' );
 		ob_end_clean();
 
-		settings_errors( 'wvwc_settings' );
+		settings_errors( 'tpfw_settings' );
 	}
 
     /**
@@ -134,7 +134,7 @@ abstract class Settings {
         <div class="wrap woocommerce">
             <?php $this->output_tabs(); ?>
 
-            <?php settings_errors( 'wvwc_settings' ); ?>
+            <?php settings_errors( 'tpfw_settings' ); ?>
 
             <h1 class="screen-reader-text"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
@@ -142,38 +142,27 @@ abstract class Settings {
                 <form method="post" action="">
                     <?php
                     \WC_Admin_Settings::output_fields( $this->get_settings( $this->get_current_tab() ) );
-                    wp_nonce_field( 'wvwc_save_settings', 'wvwc_settings_nonce' );
+                    wp_nonce_field( 'tpfw_save_settings', 'tpfw_settings_nonce' );
                     ?>
                     <p class="submit">
-                        <button type="submit" class="button-primary woocommerce-save-button" name="save" value="<?php esc_attr_e( 'Save changes', 'wine-vendor-woocommerce' ); ?>">
-                            <?php esc_html_e( 'Save changes', 'wine-vendor-woocommerce' ); ?>
+                        <button type="submit" class="button-primary woocommerce-save-button" name="save" value="<?php esc_attr_e( 'Save changes', 'tiered-pricing-for-woocommerce' ); ?>">
+                            <?php esc_html_e( 'Save changes', 'tiered-pricing-for-woocommerce' ); ?>
                         </button>
                     </p>
                 </form>
             </div>
 
             <div class="column_2">
-                <h4><?php esc_html_e( 'Do you need help?', 'wine-vendor-woocommerce' ); ?></h4>
+                <h4><?php esc_html_e( 'Starter Notes', 'tiered-pricing-for-woocommerce' ); ?></h4>
 				<ul>
 					<li>
-						<a href="<?php echo esc_url( 'https://www.facebook.com/groups/wpalgo' ); ?>" target="_blank">
-							<?php esc_html_e( 'Join Private Group', 'wine-vendor-woocommerce' ); ?>
-						</a>
+						<?php esc_html_e( 'This plugin is now a clean WooCommerce starter scaffold for tiered pricing features.', 'tiered-pricing-for-woocommerce' ); ?>
 					</li>
 					<li>
-						<a href="<?php echo esc_url( 'https://www.wpalgo.com/contact-us/' ); ?>" target="_blank">
-							<?php esc_html_e( 'Request a Feature', 'wine-vendor-woocommerce' ); ?>
-						</a>
+						<?php esc_html_e( 'Use the product edit screen to enable the starter tier settings on individual products.', 'tiered-pricing-for-woocommerce' ); ?>
 					</li>
 					<li>
-						<a href="<?php echo esc_url( 'https://www.wpalgo.com/support/' ); ?>" target="_blank">
-							<?php esc_html_e( 'Get Support', 'wine-vendor-woocommerce' ); ?>
-						</a>
-					</li>
-					<li>
-						<a href="<?php echo esc_url( 'https://wpalgo.com/plugins/wine-vendor-woocommerce/' ); ?>" target="_blank">
-							<?php esc_html_e( 'Documentation', 'wine-vendor-woocommerce' ); ?>
-						</a>
+						<?php esc_html_e( 'The pricing calculation logic has intentionally been removed so new requirements can be added cleanly later.', 'tiered-pricing-for-woocommerce' ); ?>
 					</li>
 				</ul>
             </div>
