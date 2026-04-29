@@ -169,21 +169,24 @@ class ProductPricingTable {
 			for ( var fi = 0; fi < forms.length; fi++ ) {
 				forms[ fi ].setAttribute( 'data-tpfw-submit', '1' );
 				forms[ fi ].addEventListener( 'submit', function ( e ) {
-					var form   = e.currentTarget;
-					var iface  = form.closest( '.tpfw-pricing-interface' );
-					var minQty = iface ? ( parseInt( iface.getAttribute( 'data-min-quantity' ), 10 ) || 0 ) : 0;
-					var rows   = Array.prototype.slice.call( form.querySelectorAll( '.tpfw-order-row' ) );
-					var total  = 0;
-					var hasQty = false;
+					var form         = e.currentTarget;
+					var iface        = form.closest( '.tpfw-pricing-interface' );
+					var minQty       = iface ? ( parseInt( iface.getAttribute( 'data-min-quantity' ), 10 ) || 0 ) : 0;
+					var rows         = Array.prototype.slice.call( form.querySelectorAll( '.tpfw-order-row' ) );
+					var total        = 0;
+					var hasQty       = false;
+					var missingColor = false;
 
+					// Validate only — do NOT touch the DOM yet.
 					for ( var i = 0; i < rows.length; i++ ) {
 						var qty   = ( rows[ i ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
 						var color = ( rows[ i ].querySelector( '.tpfw-color-select' ).value || '' ).trim();
-						if ( ! qty && ! color ) {
-							rows[ i ].parentNode && rows[ i ].parentNode.removeChild( rows[ i ] );
-						} else {
-							var n = parseInt( qty, 10 );
-							if ( ! isNaN( n ) && n > 0 ) { hasQty = true; total += n; }
+						if ( ! qty && ! color ) { continue; }
+						var n = parseInt( qty, 10 );
+						if ( ! isNaN( n ) && n > 0 ) {
+							hasQty = true;
+							total += n;
+							if ( ! color ) { missingColor = true; }
 						}
 					}
 
@@ -192,9 +195,24 @@ class ProductPricingTable {
 						window.alert( 'Please fill out the Qty.' );
 						return;
 					}
+					if ( missingColor ) {
+						e.preventDefault();
+						window.alert( 'Please select a color for each row.' );
+						return;
+					}
 					if ( total < minQty ) {
 						e.preventDefault();
 						window.alert( 'The total quantity must be at least ' + minQty + '.' );
+						return;
+					}
+
+					// All checks passed — strip blank rows before the form submits.
+					for ( var j = 0; j < rows.length; j++ ) {
+						var q = ( rows[ j ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
+						var c = ( rows[ j ].querySelector( '.tpfw-color-select' ).value || '' ).trim();
+						if ( ! q && ! c ) {
+							rows[ j ].parentNode && rows[ j ].parentNode.removeChild( rows[ j ] );
+						}
 					}
 				} );
 			}

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tiered Pricing for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
-"POT-Creation-Date: 2026-04-28 17:00:19+00:00\n"
+"POT-Creation-Date: 2026-04-29 00:28:28+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -131,7 +131,7 @@ msgid "Colors"
 msgstr ""
 
 #: src/Core/ProductColors.php:21 src/Frontend/ProductPricingTable.php:119
-#: src/Frontend/ProductPricingTable.php:388
+#: src/Frontend/ProductPricingTable.php:406
 msgid "Color"
 msgstr ""
 
@@ -264,44 +264,44 @@ msgstr ""
 msgid "Add to cart"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:224
+#: src/Frontend/ProductPricingTable.php:242
 msgid "Select color"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:245
+#: src/Frontend/ProductPricingTable.php:263
 msgid "Unable to add this product to the cart. Please refresh and try again."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:253
+#: src/Frontend/ProductPricingTable.php:271
 msgid "This product is not available for custom pricing."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:288
+#: src/Frontend/ProductPricingTable.php:306
 msgid "Each order row must have a quantity greater than zero."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:293
+#: src/Frontend/ProductPricingTable.php:311
 msgid "Please choose a valid color for each order row."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:306
+#: src/Frontend/ProductPricingTable.php:324
 msgid "Please add at least one quantity and color combination."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:314
+#: src/Frontend/ProductPricingTable.php:332
 #. translators: 1: total quantity, 2: minimum quantity
 msgid "Minimum total quantity is %2$s. Your current total is %1$s."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:326
+#: src/Frontend/ProductPricingTable.php:344
 msgid "Unable to match the total quantity to a pricing tier."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:346
+#: src/Frontend/ProductPricingTable.php:364
 msgid "A row could not be added to the cart."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:395
+#: src/Frontend/ProductPricingTable.php:413
 msgid "Unit Price"
 msgstr ""
 
