@@ -41,6 +41,25 @@
 	}
 }
 
+// Checkout — Date in Hand: stretch the native calendar-picker indicator to cover
+// the full input so clicking anywhere (not just the icon) opens the picker.
+#tpfw_date_in_hand {
+	position: relative;
+	cursor: pointer;
+
+	&::-webkit-calendar-picker-indicator {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: auto;
+		height: auto;
+		background: transparent;
+		cursor: pointer;
+	}
+}
+
 // Checkout — Imprint & Delivery Details section
 .tpfw-checkout-section {
 	margin-top: 2em;

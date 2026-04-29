@@ -43,6 +43,19 @@ jQuery(function ($) {
 	});
 
 	// =========================================================================
+	// Checkout page — Date in Hand: open native picker on any click.
+	// Delegated binding survives WooCommerce AJAX checkout DOM refreshes.
+	// showPicker() is called on pointerdown (before the native focus/click
+	// sequence) so the browser doesn't suppress a second programmatic open.
+	// =========================================================================
+
+	$(document).on('click', '#tpfw_date_in_hand', function () {
+		if (typeof this.showPicker === 'function') {
+			try { this.showPicker(); } catch (e) {}
+		}
+	});
+
+	// =========================================================================
 	// Checkout page — logo art file upload via AJAX.
 	// Uploads the file immediately on selection so no multipart form changes
 	// are needed on WooCommerce's own AJAX checkout submission.

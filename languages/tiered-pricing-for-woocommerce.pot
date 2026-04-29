@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tiered Pricing for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
-"POT-Creation-Date: 2026-04-29 16:19:48+00:00\n"
+"POT-Creation-Date: 2026-04-29 17:09:07+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Delivery"
 msgstr ""
 
-#: src/Core/ProductSettings.php:137 src/Frontend/CheckoutFields.php:43
+#: src/Core/ProductSettings.php:137 src/Frontend/CheckoutFields.php:65
 msgid "Remove"
 msgstr ""
 
@@ -237,24 +237,24 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:41
+#: src/Frontend/CheckoutFields.php:63
 msgid "Uploading…"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:42
+#: src/Frontend/CheckoutFields.php:64
 msgid "Uploaded"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:44
+#: src/Frontend/CheckoutFields.php:66
 msgid "Upload failed. Please try again."
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:56 src/Frontend/CheckoutFields.php:247
-#: src/Frontend/CheckoutFields.php:273 src/Frontend/CheckoutFields.php:281
+#: src/Frontend/CheckoutFields.php:78 src/Frontend/CheckoutFields.php:271
+#: src/Frontend/CheckoutFields.php:297 src/Frontend/CheckoutFields.php:305
 msgid "Imprint & Delivery Details"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:57
+#: src/Frontend/CheckoutFields.php:79
 msgid ""
 "We have the ability to place a text imprint and/or logo on your promotional "
 "products. If you want text on this item, please specify the exact text as "
@@ -268,63 +268,63 @@ msgid ""
 "etc.), we will notify you of those charges."
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:67 src/Frontend/CheckoutFields.php:314
+#: src/Frontend/CheckoutFields.php:89 src/Frontend/CheckoutFields.php:338
 msgid "Date in Hand"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:80 src/Frontend/CheckoutFields.php:315
+#: src/Frontend/CheckoutFields.php:104 src/Frontend/CheckoutFields.php:339
 msgid "Imprint Information"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:91 src/Frontend/CheckoutFields.php:316
+#: src/Frontend/CheckoutFields.php:115 src/Frontend/CheckoutFields.php:340
 msgid "Text Imprint Colors"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:92
+#: src/Frontend/CheckoutFields.php:116
 msgid "e.g. Red, White"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:103
+#: src/Frontend/CheckoutFields.php:127
 msgid "Text Imprint Size, Font & Other Information"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:104
+#: src/Frontend/CheckoutFields.php:128
 msgid "e.g. 12pt Arial Bold"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:115 src/Frontend/CheckoutFields.php:318
+#: src/Frontend/CheckoutFields.php:139 src/Frontend/CheckoutFields.php:342
 msgid "Logo Imprint Description"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:126 src/Frontend/CheckoutFields.php:319
+#: src/Frontend/CheckoutFields.php:150 src/Frontend/CheckoutFields.php:343
 msgid "Logo Imprint Color(s)"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:127
+#: src/Frontend/CheckoutFields.php:151
 msgid "e.g. PMS 485 Red, Black"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:137
+#: src/Frontend/CheckoutFields.php:161
 msgid "Attach Logo Art File"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:138
+#: src/Frontend/CheckoutFields.php:162
 msgid "optional"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:157
+#: src/Frontend/CheckoutFields.php:181
 msgid "Please select a Date in Hand."
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:199
+#: src/Frontend/CheckoutFields.php:223
 msgid "No file received."
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:317
+#: src/Frontend/CheckoutFields.php:341
 msgid "Text Imprint Size, Font & Other Info"
 msgstr ""
 
-#: src/Frontend/CheckoutFields.php:320
+#: src/Frontend/CheckoutFields.php:344
 msgid "Logo Art File"
 msgstr ""
 

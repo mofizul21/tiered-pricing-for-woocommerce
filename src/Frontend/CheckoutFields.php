@@ -25,12 +25,34 @@ class CheckoutFields {
 	// -------------------------------------------------------------------------
 
 	public function enqueue_scripts(): void {
+		// Register and enqueue the shared frontend script on all pages.
+		// Admin::enqueue_frontend_assets() only runs in wp-admin context,
+		// so we own the registration here for all frontend pages.
+		if ( ! wp_script_is( 'tpfw-frontend-script', 'registered' ) ) {
+			wp_register_script(
+				'tpfw-frontend-script',
+				plugins_url( 'assets/js/frontend.js', TPFW_PLUGIN_FILE ),
+				[ 'jquery' ],
+				TPFW_VERSION,
+				true
+			);
+		}
+		wp_enqueue_script( 'tpfw-frontend-script' );
+
+		if ( ! wp_style_is( 'tpfw-frontend-style', 'registered' ) ) {
+			wp_register_style(
+				'tpfw-frontend-style',
+				plugins_url( 'assets/css/frontend.css', TPFW_PLUGIN_FILE ),
+				[],
+				TPFW_VERSION
+			);
+		}
+		wp_enqueue_style( 'tpfw-frontend-style' );
+
 		if ( ! is_checkout() ) {
 			return;
 		}
 
-		// The upload logic lives in the shared frontend.js (tpfw-frontend-script).
-		// We only need to pass the checkout-specific data to it.
 		wp_localize_script(
 			'tpfw-frontend-script',
 			'tpfwCheckout',
@@ -59,7 +81,7 @@ class CheckoutFields {
 			'tiered-pricing-for-woocommerce'
 		) . '</p>';
 
-		// Date in hand (required)
+		// Date in hand (required) — min set to today so past dates are disabled.
 		woocommerce_form_field(
 			'tpfw_date_in_hand',
 			[
@@ -67,7 +89,9 @@ class CheckoutFields {
 				'label'             => __( 'Date in Hand', 'tiered-pricing-for-woocommerce' ),
 				'required'          => true,
 				'class'             => [ 'form-row-wide' ],
-				'custom_attributes' => [ 'type' => 'date' ],
+				'custom_attributes' => [
+					'min' => wp_date( 'Y-m-d' ),
+				],
 			],
 			$checkout->get_value( 'tpfw_date_in_hand' )
 		);
