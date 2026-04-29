@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tiered Pricing for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
-"POT-Creation-Date: 2026-04-29 00:28:28+00:00\n"
+"POT-Creation-Date: 2026-04-29 16:19:48+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -130,8 +130,8 @@ msgstr ""
 msgid "Colors"
 msgstr ""
 
-#: src/Core/ProductColors.php:21 src/Frontend/ProductPricingTable.php:119
-#: src/Frontend/ProductPricingTable.php:406
+#: src/Core/ProductColors.php:21 src/Frontend/ProductPricingTable.php:144
+#: src/Frontend/ProductPricingTable.php:515
 msgid "Color"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Delivery"
 msgstr ""
 
-#: src/Core/ProductSettings.php:137
+#: src/Core/ProductSettings.php:137 src/Frontend/CheckoutFields.php:43
 msgid "Remove"
 msgstr ""
 
@@ -237,75 +237,162 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:86
+#: src/Frontend/CheckoutFields.php:41
+msgid "Uploading…"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:42
+msgid "Uploaded"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:44
+msgid "Upload failed. Please try again."
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:56 src/Frontend/CheckoutFields.php:247
+#: src/Frontend/CheckoutFields.php:273 src/Frontend/CheckoutFields.php:281
+msgid "Imprint & Delivery Details"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:57
+msgid ""
+"We have the ability to place a text imprint and/or logo on your promotional "
+"products. If you want text on this item, please specify the exact text as "
+"well as the fonts, colors, sizes, and layout. If you would like to use a "
+"logo, you should describe the logo and attach the logo file. If you only "
+"have a paper copy of the logo, specify that below and we'll contact you to "
+"make arrangements to receive the art. Most items have imprint size "
+"restrictions. We will contact you if we need to make adjustments to your "
+"text or artwork. A one-color imprint is usually included in the price of "
+"the item. If there will be additional charges (extra colors, setup for art, "
+"etc.), we will notify you of those charges."
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:67 src/Frontend/CheckoutFields.php:314
+msgid "Date in Hand"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:80 src/Frontend/CheckoutFields.php:315
+msgid "Imprint Information"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:91 src/Frontend/CheckoutFields.php:316
+msgid "Text Imprint Colors"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:92
+msgid "e.g. Red, White"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:103
+msgid "Text Imprint Size, Font & Other Information"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:104
+msgid "e.g. 12pt Arial Bold"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:115 src/Frontend/CheckoutFields.php:318
+msgid "Logo Imprint Description"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:126 src/Frontend/CheckoutFields.php:319
+msgid "Logo Imprint Color(s)"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:127
+msgid "e.g. PMS 485 Red, Black"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:137
+msgid "Attach Logo Art File"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:138
+msgid "optional"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:157
+msgid "Please select a Date in Hand."
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:199
+msgid "No file received."
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:317
+msgid "Text Imprint Size, Font & Other Info"
+msgstr ""
+
+#: src/Frontend/CheckoutFields.php:320
+msgid "Logo Art File"
+msgstr ""
+
+#: src/Frontend/ProductPricingTable.php:111
 msgid "Quantity"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:94
+#: src/Frontend/ProductPricingTable.php:119
 msgid "Your Price (each)"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:108
+#: src/Frontend/ProductPricingTable.php:133
 msgid ""
 "Assign at least one Color term to this product to enable ordering from the "
 "pricing table."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:118
+#: src/Frontend/ProductPricingTable.php:143
 msgid "Qty*"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:131
+#: src/Frontend/ProductPricingTable.php:156
 #. translators: %s: minimum quantity
 msgid "Minimum total quantity for this product is %s across all rows."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:137
+#: src/Frontend/ProductPricingTable.php:162
 msgid "Add to cart"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:242
+#: src/Frontend/ProductPricingTable.php:274
 msgid "Select color"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:263
+#: src/Frontend/ProductPricingTable.php:346
 msgid "Unable to add this product to the cart. Please refresh and try again."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:271
+#: src/Frontend/ProductPricingTable.php:358
 msgid "This product is not available for custom pricing."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:306
+#: src/Frontend/ProductPricingTable.php:393
 msgid "Each order row must have a quantity greater than zero."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:311
+#: src/Frontend/ProductPricingTable.php:398
 msgid "Please choose a valid color for each order row."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:324
+#: src/Frontend/ProductPricingTable.php:411
 msgid "Please add at least one quantity and color combination."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:332
+#: src/Frontend/ProductPricingTable.php:419
 #. translators: 1: total quantity, 2: minimum quantity
 msgid "Minimum total quantity is %2$s. Your current total is %1$s."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:344
+#: src/Frontend/ProductPricingTable.php:431
 msgid "Unable to match the total quantity to a pricing tier."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:364
-msgid "A row could not be added to the cart."
+#: src/Frontend/ProductPricingTable.php:473
+msgid "None of the rows could be added to the cart. Please try again."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:413
-msgid "Unit Price"
-msgstr ""
-
-#: src/Plugin.php:153
+#: src/Plugin.php:155
 msgid ""
 "Tiered Pricing for WooCommerce requires WooCommerce to be installed and "
 "active."

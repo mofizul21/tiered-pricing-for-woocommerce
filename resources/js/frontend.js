@@ -1,6 +1,12 @@
 jQuery(function ($) {
 	'use strict';
 
+	// =========================================================================
+	// Product page — order form submit handler (external fallback validation).
+	// The inline <script> in the shortcode handles the primary logic; this
+	// catches any edge-case submission that bypasses the inline handler.
+	// =========================================================================
+
 	$(document).on('submit', '.tpfw-order-form', function () {
 		var $form = $(this);
 		var $interface = $form.closest('.tpfw-pricing-interface');
@@ -35,4 +41,69 @@ jQuery(function ($) {
 
 		return true;
 	});
+
+	// =========================================================================
+	// Checkout page — logo art file upload via AJAX.
+	// Uploads the file immediately on selection so no multipart form changes
+	// are needed on WooCommerce's own AJAX checkout submission.
+	// The resulting attachment ID is stored in a hidden field and saved with
+	// the order via CheckoutFields::save_fields().
+	// =========================================================================
+
+	var $fileInput = $('#tpfw_logo_file');
+	var $hiddenId  = $('#tpfw_logo_attachment_id');
+	var $status    = $('.tpfw-upload-status');
+
+	if ($fileInput.length && typeof tpfwCheckout !== 'undefined') {
+
+		$fileInput.on('change', function () {
+			var file = this.files[0];
+			if (!file) {
+				return;
+			}
+
+			$status.removeClass('tpfw-upload-ok tpfw-upload-error').text(tpfwCheckout.i18n.uploading);
+			$hiddenId.val('');
+
+			var formData = new FormData();
+			formData.append('action', 'tpfw_upload_logo');
+			formData.append('nonce', tpfwCheckout.nonce);
+			formData.append('tpfw_logo_file', file);
+
+			$.ajax({
+				url:         tpfwCheckout.ajaxUrl,
+				type:        'POST',
+				data:        formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					if (response.success) {
+						$hiddenId.val(response.data.attachment_id);
+						$status
+							.addClass('tpfw-upload-ok')
+							.html(
+								tpfwCheckout.i18n.uploaded + ': <strong>' +
+								$('<span>').text(response.data.filename).html() +
+								'</strong> &nbsp;<a href="#" class="tpfw-remove-file">' +
+								tpfwCheckout.i18n.remove + '</a>'
+							);
+					} else {
+						$status
+							.addClass('tpfw-upload-error')
+							.text(response.data.message || tpfwCheckout.i18n.error);
+					}
+				},
+				error: function () {
+					$status.addClass('tpfw-upload-error').text(tpfwCheckout.i18n.error);
+				},
+			});
+		});
+
+		$(document).on('click', '.tpfw-remove-file', function (e) {
+			e.preventDefault();
+			$fileInput.val('');
+			$hiddenId.val('');
+			$status.removeClass('tpfw-upload-ok tpfw-upload-error').text('');
+		});
+	}
 });
