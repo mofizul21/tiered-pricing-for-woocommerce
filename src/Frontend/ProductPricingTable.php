@@ -37,6 +37,11 @@ class ProductPricingTable {
 
 		// Restore our custom fields when the cart is rebuilt from session.
 		add_filter( 'woocommerce_get_cart_item_from_session', [ $this, 'restore_tpfw_cart_item_data' ], 10, 2 );
+
+		// Pricing is locked to the tier calculated at add-to-cart time.
+		// Allowing qty edits in the cart would silently use the wrong price,
+		// so replace the editable input with plain read-only text.
+		add_filter( 'woocommerce_cart_item_quantity', [ $this, 'lock_cart_item_quantity' ], 10, 3 );
 	}
 
 	/**
@@ -270,6 +275,24 @@ class ProductPricingTable {
 	}
 
 	/**
+	 * Replace the editable quantity input with plain text for tpfw cart items.
+	 * Quantity changes in the cart cannot recalculate the tier price correctly
+	 * because the price is shared across a group of rows from the same submission.
+	 *
+	 * @param string $product_quantity The default quantity HTML (input or text).
+	 * @param string $cart_item_key    Cart item key.
+	 * @param array  $cart_item        Cart item data.
+	 * @return string
+	 */
+	public function lock_cart_item_quantity( string $product_quantity, string $cart_item_key, array $cart_item ): string {
+		if ( empty( $cart_item['tpfw_color_id'] ) ) {
+			return $product_quantity;
+		}
+
+		return '<span class="tpfw-qty-locked">' . esc_html( (string) $cart_item['quantity'] ) . '</span>';
+	}
+
+	/**
 	 * Appended by woocommerce_add_cart_item_data at PHP_INT_MAX priority so it
 	 * survives any earlier filters that strip unknown keys. The incrementing
 	 * counter makes every tpfw add_to_cart call produce a distinct cart_item_key.
@@ -280,7 +303,6 @@ class ProductPricingTable {
 	public function inject_tpfw_unique_key( array $cart_item_data ): array {
 		if ( $this->is_tpfw_adding ) {
 			$cart_item_data['tpfw_unique'] = ++$this->tpfw_add_counter;
-			tpfw_log( 'inject_tpfw_unique_key fired — stamped tpfw_unique=' . $this->tpfw_add_counter );
 		}
 		return $cart_item_data;
 	}
@@ -403,11 +425,6 @@ class ProductPricingTable {
 			return;
 		}
 
-		tpfw_log( '=== handle_custom_add_to_cart START ===' );
-		tpfw_log( 'product_id=' . $product_id . ' unit_price=' . $unit_price . ' total_qty=' . $total_quantity );
-		tpfw_log( 'valid_rows (' . count( $valid_rows ) . '): ' . wp_json_encode( $valid_rows ) );
-		tpfw_log( 'cart contents BEFORE loop (' . count( WC()->cart->get_cart() ) . ' items): ' . wp_json_encode( array_map( fn( $i ) => [ 'key' => $i['key'] ?? '?', 'product_id' => $i['product_id'], 'qty' => $i['quantity'], 'color' => $i['tpfw_color_name'] ?? 'n/a', 'unique' => $i['tpfw_unique'] ?? 'n/a' ], WC()->cart->get_cart() ) ) );
-
 		$added_count = 0;
 
 		// Activate the flag so inject_tpfw_unique_key() stamps each item with an
@@ -432,21 +449,9 @@ class ProductPricingTable {
 
 			$cart_count_after = count( WC()->cart->get_cart() );
 
-			tpfw_log( sprintf(
-				'Row %d — color_id=%d color_name=%s qty=%d | add_to_cart returned=%s | cart items before=%d after=%d',
-				$index,
-				$row['color_id'],
-				$row['color_name'],
-				$row['quantity'],
-				$added ?: 'FALSE',
-				$cart_count_before,
-				$cart_count_after
-			) );
-
 			// Dump any WC error notices that appeared during this add.
 			$notices = wc_get_notices( 'error' );
 			if ( ! empty( $notices ) ) {
-				tpfw_log( 'WC error notices after row ' . $index . ': ' . wp_json_encode( array_column( $notices, 'notice' ) ) );
 				wc_clear_notices();
 			}
 
@@ -456,9 +461,6 @@ class ProductPricingTable {
 		}
 
 		$this->is_tpfw_adding = false;
-
-		tpfw_log( 'cart contents AFTER loop (' . count( WC()->cart->get_cart() ) . ' items): ' . wp_json_encode( array_map( fn( $i ) => [ 'key' => $i['key'] ?? '?', 'product_id' => $i['product_id'], 'qty' => $i['quantity'], 'color' => $i['tpfw_color_name'] ?? 'n/a', 'unique' => $i['tpfw_unique'] ?? 'n/a' ], WC()->cart->get_cart() ) ) );
-		tpfw_log( 'added_count=' . $added_count );
 
 		if ( 0 === $added_count ) {
 			wc_add_notice( esc_html__( 'None of the rows could be added to the cart. Please try again.', 'tiered-pricing-for-woocommerce' ), 'error' );
