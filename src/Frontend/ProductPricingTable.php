@@ -16,6 +16,7 @@ class ProductPricingTable {
 		add_action( 'wp_loaded', [ $this, 'handle_custom_add_to_cart' ] );
 		add_filter( 'woocommerce_get_price_html', [ $this, 'maybe_hide_single_price' ], 10, 2 );
 		add_filter( 'woocommerce_get_item_data', [ $this, 'render_cart_item_meta' ], 10, 2 );
+		add_filter( 'woocommerce_cart_item_name', [ $this, 'append_color_to_checkout_name' ], 10, 2 );
 		add_action( 'woocommerce_before_calculate_totals', [ $this, 'apply_cart_item_prices' ] );
 	}
 
@@ -401,7 +402,8 @@ class ProductPricingTable {
 	 * @return array
 	 */
 	public function render_cart_item_meta( array $item_data, array $cart_item ): array {
-		if ( ! empty( $cart_item['tpfw_color_name'] ) ) {
+		// On checkout the color is rendered inline by append_color_to_checkout_name().
+		if ( ! empty( $cart_item['tpfw_color_name'] ) && ! is_checkout() ) {
 			$item_data[] = [
 				'key'   => esc_html__( 'Color', 'tiered-pricing-for-woocommerce' ),
 				'value' => wc_clean( $cart_item['tpfw_color_name'] ),
@@ -409,6 +411,23 @@ class ProductPricingTable {
 		}
 
 		return $item_data;
+	}
+
+	/**
+	 * On the checkout order-review table append color as a plain <p> beneath the product name.
+	 *
+	 * @param string $name      Product name HTML.
+	 * @param array  $cart_item Cart item data.
+	 * @return string
+	 */
+	public function append_color_to_checkout_name( string $name, array $cart_item ): string {
+		if ( ! is_checkout() || empty( $cart_item['tpfw_color_name'] ) ) {
+			return $name;
+		}
+
+		$name .= '<p class="tpfw-checkout-color">Color: <span style="color:#ccc;">' . esc_html( $cart_item['tpfw_color_name'] ) . '</span></p>';
+
+		return $name;
 	}
 
 	/**
