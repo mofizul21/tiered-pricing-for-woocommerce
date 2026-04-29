@@ -21,3 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 function TPFW(): Plugin { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	return Plugin::instance();
 }
+
+/**
+ * Write a debug line to wp-content/debug.log via error_log().
+ * Remove this function (and all tpfw_log() calls) once the bug is diagnosed.
+ *
+ * @param string $message
+ */
+function tpfw_log( string $message ): void {
+	error_log( '[TPFW] ' . $message );
+}

@@ -8,6 +8,18 @@ defined( 'ABSPATH' ) || exit;
 class ProductPricingTable {
 
 	/**
+	 * Whether our add-to-cart loop is currently running.
+	 * Used by inject_tpfw_unique_key() to know when to stamp items.
+	 */
+	private bool $is_tpfw_adding = false;
+
+	/**
+	 * Per-request counter incremented for every tpfw add_to_cart call,
+	 * guaranteeing a unique cart_item_key even if other filters strip our data.
+	 */
+	private int $tpfw_add_counter = 0;
+
+	/**
 	 * Register frontend product pricing hooks.
 	 */
 	public function __construct() {
@@ -18,6 +30,13 @@ class ProductPricingTable {
 		add_filter( 'woocommerce_get_item_data', [ $this, 'render_cart_item_meta' ], 10, 2 );
 		add_filter( 'woocommerce_cart_item_name', [ $this, 'append_color_to_checkout_name' ], 10, 2 );
 		add_action( 'woocommerce_before_calculate_totals', [ $this, 'apply_cart_item_prices' ] );
+
+		// Runs last (PHP_INT_MAX) so our unique stamp survives any third-party
+		// filters that might strip unknown cart item data fields.
+		add_filter( 'woocommerce_add_cart_item_data', [ $this, 'inject_tpfw_unique_key' ], PHP_INT_MAX, 1 );
+
+		// Restore our custom fields when the cart is rebuilt from session.
+		add_filter( 'woocommerce_get_cart_item_from_session', [ $this, 'restore_tpfw_cart_item_data' ], 10, 2 );
 	}
 
 	/**
@@ -251,6 +270,40 @@ class ProductPricingTable {
 	}
 
 	/**
+	 * Appended by woocommerce_add_cart_item_data at PHP_INT_MAX priority so it
+	 * survives any earlier filters that strip unknown keys. The incrementing
+	 * counter makes every tpfw add_to_cart call produce a distinct cart_item_key.
+	 *
+	 * @param array $cart_item_data Cart item data being filtered.
+	 * @return array
+	 */
+	public function inject_tpfw_unique_key( array $cart_item_data ): array {
+		if ( $this->is_tpfw_adding ) {
+			$cart_item_data['tpfw_unique'] = ++$this->tpfw_add_counter;
+			tpfw_log( 'inject_tpfw_unique_key fired — stamped tpfw_unique=' . $this->tpfw_add_counter );
+		}
+		return $cart_item_data;
+	}
+
+	/**
+	 * Restore tpfw custom fields when the cart is rebuilt from the session.
+	 * WooCommerce stores all scalar cart item data in the session automatically,
+	 * but some session handlers or plugins may strip unknown keys on load.
+	 *
+	 * @param array $cart_item  Cart item being rebuilt.
+	 * @param array $values     Raw session values for this item.
+	 * @return array
+	 */
+	public function restore_tpfw_cart_item_data( array $cart_item, array $values ): array {
+		foreach ( [ 'tpfw_color_id', 'tpfw_color_name', 'tpfw_unit_price', 'tpfw_total_qty', 'tpfw_unique' ] as $key ) {
+			if ( isset( $values[ $key ] ) && ! isset( $cart_item[ $key ] ) ) {
+				$cart_item[ $key ] = $values[ $key ];
+			}
+		}
+		return $cart_item;
+	}
+
+	/**
 	 * Process custom add-to-cart rows.
 	 */
 	public function handle_custom_add_to_cart(): void {
@@ -266,7 +319,11 @@ class ProductPricingTable {
 		}
 
 		$product_id = isset( $_POST['add-to-cart'] ) ? absint( wp_unslash( $_POST['add-to-cart'] ) ) : 0;
-		$product    = $product_id ? wc_get_product( $product_id ) : false;
+
+		// Stop WooCommerce's own add_to_cart_action (priority 20) from also processing this form.
+		unset( $_POST['add-to-cart'], $_REQUEST['add-to-cart'] );
+
+		$product = $product_id ? wc_get_product( $product_id ) : false;
 
 		if ( ! $product instanceof WC_Product || ! $this->has_custom_pricing( $product_id ) ) {
 			wc_add_notice( esc_html__( 'This product is not available for custom pricing.', 'tiered-pricing-for-woocommerce' ), 'error' );
@@ -346,7 +403,20 @@ class ProductPricingTable {
 			return;
 		}
 
+		tpfw_log( '=== handle_custom_add_to_cart START ===' );
+		tpfw_log( 'product_id=' . $product_id . ' unit_price=' . $unit_price . ' total_qty=' . $total_quantity );
+		tpfw_log( 'valid_rows (' . count( $valid_rows ) . '): ' . wp_json_encode( $valid_rows ) );
+		tpfw_log( 'cart contents BEFORE loop (' . count( WC()->cart->get_cart() ) . ' items): ' . wp_json_encode( array_map( fn( $i ) => [ 'key' => $i['key'] ?? '?', 'product_id' => $i['product_id'], 'qty' => $i['quantity'], 'color' => $i['tpfw_color_name'] ?? 'n/a', 'unique' => $i['tpfw_unique'] ?? 'n/a' ], WC()->cart->get_cart() ) ) );
+
+		$added_count = 0;
+
+		// Activate the flag so inject_tpfw_unique_key() stamps each item with an
+		// incrementing counter, guaranteeing a distinct cart_item_key per row.
+		$this->is_tpfw_adding = true;
+
 		foreach ( $valid_rows as $index => $row ) {
+			$cart_count_before = count( WC()->cart->get_cart() );
+
 			$added = WC()->cart->add_to_cart(
 				$product_id,
 				$row['quantity'],
@@ -357,14 +427,42 @@ class ProductPricingTable {
 					'tpfw_color_name' => $row['color_name'],
 					'tpfw_unit_price' => $unit_price,
 					'tpfw_total_qty'  => $total_quantity,
-					'tpfw_row_key'    => md5( $product_id . '|' . $row['color_id'] . '|' . $row['quantity'] . '|' . $index . '|' . wp_rand() ),
 				]
 			);
 
-			if ( ! $added ) {
-				wc_add_notice( esc_html__( 'A row could not be added to the cart.', 'tiered-pricing-for-woocommerce' ), 'error' );
-				return;
+			$cart_count_after = count( WC()->cart->get_cart() );
+
+			tpfw_log( sprintf(
+				'Row %d — color_id=%d color_name=%s qty=%d | add_to_cart returned=%s | cart items before=%d after=%d',
+				$index,
+				$row['color_id'],
+				$row['color_name'],
+				$row['quantity'],
+				$added ?: 'FALSE',
+				$cart_count_before,
+				$cart_count_after
+			) );
+
+			// Dump any WC error notices that appeared during this add.
+			$notices = wc_get_notices( 'error' );
+			if ( ! empty( $notices ) ) {
+				tpfw_log( 'WC error notices after row ' . $index . ': ' . wp_json_encode( array_column( $notices, 'notice' ) ) );
+				wc_clear_notices();
 			}
+
+			if ( $added ) {
+				$added_count++;
+			}
+		}
+
+		$this->is_tpfw_adding = false;
+
+		tpfw_log( 'cart contents AFTER loop (' . count( WC()->cart->get_cart() ) . ' items): ' . wp_json_encode( array_map( fn( $i ) => [ 'key' => $i['key'] ?? '?', 'product_id' => $i['product_id'], 'qty' => $i['quantity'], 'color' => $i['tpfw_color_name'] ?? 'n/a', 'unique' => $i['tpfw_unique'] ?? 'n/a' ], WC()->cart->get_cart() ) ) );
+		tpfw_log( 'added_count=' . $added_count );
+
+		if ( 0 === $added_count ) {
+			wc_add_notice( esc_html__( 'None of the rows could be added to the cart. Please try again.', 'tiered-pricing-for-woocommerce' ), 'error' );
+			return;
 		}
 
 		wp_safe_redirect( wc_get_cart_url() );
