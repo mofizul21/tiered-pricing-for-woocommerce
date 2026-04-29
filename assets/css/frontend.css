@@ -1,1 +1,5 @@
 .cart-total{max-width:500px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:5px}
+.tpfw-qty-locked{display:inline-block;font-weight:600}
+.single_add_to_cart_button.tpfw-loading{opacity:.7;cursor:not-allowed;position:relative;padding-left:2.4em}
+.single_add_to_cart_button.tpfw-loading::before{content:'';box-sizing:border-box;position:absolute;left:.7em;top:50%;width:1em;height:1em;margin-top:-.5em;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:tpfw-spin .7s linear infinite}
+@keyframes tpfw-spin{to{transform:rotate(360deg)}}

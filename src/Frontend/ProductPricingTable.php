@@ -239,6 +239,13 @@ class ProductPricingTable {
 							rows[ j ].parentNode && rows[ j ].parentNode.removeChild( rows[ j ] );
 						}
 					}
+
+					// Disable the button and show a spinner while the server processes.
+					var btn = form.querySelector( '[type="submit"]' );
+					if ( btn ) {
+						btn.disabled = true;
+						btn.classList.add( 'tpfw-loading' );
+					}
 				} );
 			}
 		})();
