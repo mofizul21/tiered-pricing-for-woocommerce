@@ -60,6 +60,16 @@
 	}
 }
 
+// Product editor pricing table elements
+.tpfw-pricing-table-editor {
+	max-width: 96%;
+}
+.tpfw-pricing-table-editor,
+.tpfw-add-pricing-row,
+span.description {
+	margin: 10px !important;
+}
+
 @media screen and (max-width: 782px) {
 	.wrap.woocommerce {
 		flex-direction: column;
