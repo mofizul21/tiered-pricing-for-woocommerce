@@ -408,13 +408,6 @@ class ProductPricingTable {
 			];
 		}
 
-		if ( isset( $cart_item['tpfw_unit_price'] ) ) {
-			$item_data[] = [
-				'key'   => esc_html__( 'Unit Price', 'tiered-pricing-for-woocommerce' ),
-				'value' => wc_price( (float) $cart_item['tpfw_unit_price'] ),
-			];
-		}
-
 		return $item_data;
 	}
 

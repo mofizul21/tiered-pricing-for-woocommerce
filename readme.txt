@@ -18,6 +18,7 @@ This plugin has been cleaned and converted into a starter WooCommerce extension 
 
 It includes:
 
+* Display of tiered pricing fields through shortcodes on the frontend [tpfw_pricing_table]
 * A proper WooCommerce plugin bootstrap.
 * A WooCommerce submenu settings page.
 * Starter product-level fields for enabling tiered pricing and entering pricing tiers.
