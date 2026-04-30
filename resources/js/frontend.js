@@ -119,4 +119,56 @@ jQuery(function ($) {
 			$status.removeClass('tpfw-upload-ok tpfw-upload-error').text('');
 		});
 	}
+
+	// =========================================================================
+	// Request Info — modal open / close and AJAX form submission.
+	// =========================================================================
+
+	function tpfwRiClose() {
+		$('#tpfw-request-info-modal').attr('aria-hidden', 'true').fadeOut(200);
+		$('body').removeClass('tpfw-modal-open');
+	}
+
+	$(document).on('click', '.tpfw-request-info-btn', function () {
+		$('#tpfw-request-info-modal').attr('aria-hidden', 'false').fadeIn(200);
+		$('body').addClass('tpfw-modal-open');
+	});
+
+	$(document).on('click', '.tpfw-ri-close, .tpfw-ri-overlay', function () {
+		tpfwRiClose();
+	});
+
+	$(document).on('keydown', function (e) {
+		if (e.key === 'Escape' && $('#tpfw-request-info-modal').is(':visible')) {
+			tpfwRiClose();
+		}
+	});
+
+	$(document).on('submit', '#tpfw-request-info-form', function (e) {
+		e.preventDefault();
+
+		if (typeof tpfwRequestInfo === 'undefined') {
+			return;
+		}
+
+		var $form = $(this);
+		var $btn  = $form.find('.tpfw-ri-submit');
+		var $msg  = $('#tpfw-ri-message');
+
+		$btn.prop('disabled', true).text(tpfwRequestInfo.i18n.sending);
+		$msg.removeClass('tpfw-ri-success tpfw-ri-error').text('').hide();
+
+		$.post(tpfwRequestInfo.ajaxUrl, $form.serialize(), function (response) {
+			if (response.success) {
+				$msg.addClass('tpfw-ri-success').text(response.data.message).show();
+				$form[0].reset();
+			} else {
+				$msg.addClass('tpfw-ri-error').text(response.data.message).show();
+			}
+			$btn.prop('disabled', false).text(tpfwRequestInfo.i18n.submit);
+		}).fail(function () {
+			$msg.addClass('tpfw-ri-error').text(tpfwRequestInfo.i18n.error).show();
+			$btn.prop('disabled', false).text(tpfwRequestInfo.i18n.submit);
+		});
+	});
 });

@@ -141,7 +141,10 @@ class ProductPricingTable {
 						?>
 					</p>
 
-					<button type="submit" class="single_add_to_cart_button button alt"><?php esc_html_e( 'Add to cart', 'tiered-pricing-for-woocommerce' ); ?></button>
+					<div class="tpfw-action-buttons">
+						<button type="submit" class="single_add_to_cart_button button alt"><?php esc_html_e( 'Add to cart', 'tiered-pricing-for-woocommerce' ); ?></button>
+						<button type="button" class="button tpfw-request-info-btn"><?php esc_html_e( 'Request Info', 'tiered-pricing-for-woocommerce' ); ?></button>
+					</div>
 				</form>
 			<?php endif; ?>
 		</div>
@@ -301,7 +304,7 @@ class ProductPricingTable {
 	 * WooCommerce stores all scalar cart item data in the session automatically,
 	 * but some session handlers or plugins may strip unknown keys on load.
 	 *
-	 * @param array $cart_item  Cart item being rebuilt.
+	 * @param array $cart_item  Cart item being re/built.
 	 * @param array $values     Raw session values for this item.
 	 * @return array
 	 */
