@@ -9,6 +9,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class CheckoutFields {
 
+	/**
+	 * Register all hooks for checkout fields, logo upload, admin display, and emails.
+	 */
 	public function __construct() {
 		add_action( 'woocommerce_after_order_notes',                      [ $this, 'render_fields' ] );
 		add_action( 'woocommerce_checkout_process',                       [ $this, 'validate_fields' ] );
@@ -24,6 +27,16 @@ class CheckoutFields {
 	// Script / style enqueue
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Register and enqueue the shared frontend script and stylesheet.
+	 *
+	 * This is intentionally the canonical registration point for
+	 * tpfw-frontend-script on the frontend. Admin.php only runs in wp-admin
+	 * context, so this method owns registration for all frontend pages.
+	 * On the checkout page it also localises tpfwCheckout for the logo uploader.
+	 *
+	 * @return void
+	 */
 	public function enqueue_scripts(): void {
 		// Register and enqueue the shared frontend script on all pages.
 		// Admin::enqueue_frontend_assets() only runs in wp-admin context,
@@ -73,6 +86,17 @@ class CheckoutFields {
 	// Render fields on the checkout page
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Output the Imprint & Delivery Details section after the order notes field.
+	 *
+	 * Renders seven fields: Date in Hand (required date picker), Imprint Information
+	 * (textarea), Text Imprint Colors, Text Imprint Size/Font/Details, Logo Imprint
+	 * Description, Logo Imprint Colors, and a file upload for logo art (AJAX-handled,
+	 * attachment ID stored in a hidden input).
+	 *
+	 * @param \WC_Checkout $checkout WooCommerce checkout instance.
+	 * @return void
+	 */
 	public function render_fields( \WC_Checkout $checkout ): void {
 		echo '<div id="tpfw-checkout-fields" class="tpfw-checkout-section">';
 		echo '<h3>' . esc_html__( 'Imprint & Delivery Details', 'tiered-pricing-for-woocommerce' ) . '</h3>';
@@ -175,6 +199,14 @@ class CheckoutFields {
 	// Validation
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Validate required checkout fields before the order is created.
+	 *
+	 * Adds a WooCommerce error notice if Date in Hand is missing, which prevents
+	 * the order from being placed until the customer fills it in.
+	 *
+	 * @return void
+	 */
 	public function validate_fields(): void {
 		if ( empty( $_POST['tpfw_date_in_hand'] ) ) {
 			wc_add_notice(
@@ -188,6 +220,17 @@ class CheckoutFields {
 	// Save to order meta
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Persist checkout field values to order meta.
+	 *
+	 * Text fields are sanitized individually before storage. The imprint info
+	 * textarea uses sanitize_textarea_field to preserve line breaks, and the
+	 * logo attachment ID is cast to int. All meta keys are prefixed with `_tpfw_`.
+	 *
+	 * @param \WC_Order $order WooCommerce order being created.
+	 * @param array     $data  Posted checkout data (unused; reads from $_POST directly).
+	 * @return void
+	 */
 	public function save_fields( \WC_Order $order, array $data ): void {
 		$text_fields = [
 			'tpfw_date_in_hand'        => 'sanitize_text_field',
@@ -216,6 +259,18 @@ class CheckoutFields {
 	// AJAX logo upload
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Handle the AJAX logo art file upload and return the new attachment ID.
+	 *
+	 * Accepts authenticated and unauthenticated requests (guests at checkout).
+	 * Validates the nonce, checks that a file was received, restricts to an
+	 * explicit allowlist of MIME types, delegates to media_handle_upload(), and
+	 * returns JSON with the attachment ID and filename on success.
+	 *
+	 * Allowed types: jpg/jpeg, png, gif, webp, pdf, doc, docx, ai, eps, svg.
+	 *
+	 * @return void Sends JSON response and exits.
+	 */
 	public function handle_logo_upload(): void {
 		check_ajax_referer( 'tpfw_upload_logo', 'nonce' );
 
@@ -260,6 +315,16 @@ class CheckoutFields {
 	// Admin order view
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Render imprint and delivery details in the admin order edit screen.
+	 *
+	 * Outputs an HTML table below the billing address block. Returns early if
+	 * all fields are empty so no section appears for orders placed before this
+	 * plugin was active.
+	 *
+	 * @param \WC_Order $order Current order being viewed.
+	 * @return void
+	 */
 	public function display_admin_fields( \WC_Order $order ): void {
 		$fields = $this->get_saved_fields( $order );
 
@@ -286,6 +351,18 @@ class CheckoutFields {
 	// Email output
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Append imprint and delivery details to WooCommerce order emails.
+	 *
+	 * Called for both admin and customer emails. Outputs a plain-text block when
+	 * $plain_text is true, otherwise an HTML table. Returns early if all fields
+	 * are empty so no section appears in emails for older orders.
+	 *
+	 * @param \WC_Order $order          Order whose details are being emailed.
+	 * @param bool      $sent_to_admin  True when the email goes to the site admin.
+	 * @param bool      $plain_text     True when a plain-text email is being rendered.
+	 * @return void
+	 */
 	public function display_email_fields( \WC_Order $order, bool $sent_to_admin, bool $plain_text ): void {
 		$fields = $this->get_saved_fields( $order );
 
@@ -322,6 +399,16 @@ class CheckoutFields {
 	// Helper: read all saved fields from an order
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Build a label-to-value map of all saved imprint/delivery fields for an order.
+	 *
+	 * For the logo attachment, resolves the ID to a clickable filename link (or
+	 * plain filename if the URL is unavailable). All values are already escaped
+	 * for safe output by callers.
+	 *
+	 * @param \WC_Order $order Order to read meta from.
+	 * @return array<string, string> Associative array of human-readable label => escaped value.
+	 */
 	private function get_saved_fields( \WC_Order $order ): array {
 		$attachment_id = (int) $order->get_meta( '_tpfw_logo_attachment_id' );
 		$logo_value    = '';

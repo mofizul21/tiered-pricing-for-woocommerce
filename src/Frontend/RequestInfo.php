@@ -12,35 +12,17 @@ class RequestInfo {
 	 */
 	public function __construct() {
 		add_action( 'wp_footer', [ $this, 'render_modal' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'localize_script' ] );
 		add_action( 'wp_ajax_tpfw_request_info', [ $this, 'handle_submission' ] );
 		add_action( 'wp_ajax_nopriv_tpfw_request_info', [ $this, 'handle_submission' ] );
 	}
 
 	/**
-	 * Localize the frontend script with AJAX URL and i18n strings.
-	 */
-	public function localize_script(): void {
-		if ( ! is_product() ) {
-			return;
-		}
-
-		wp_localize_script(
-			'tpfw-frontend-script',
-			'tpfwRequestInfo',
-			[
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'i18n'    => [
-					'sending' => esc_html__( 'Sending…', 'tiered-pricing-for-woocommerce' ),
-					'error'   => esc_html__( 'Something went wrong. Please try again.', 'tiered-pricing-for-woocommerce' ),
-					'submit'  => esc_html__( 'Submit', 'tiered-pricing-for-woocommerce' ),
-				],
-			]
-		);
-	}
-
-	/**
-	 * Output the modal HTML in the footer on single product pages.
+	 * Output the modal HTML and inline config in the footer on single product pages.
+	 *
+	 * tpfwRequestInfo is printed as an inline <script> here rather than via
+	 * wp_localize_script() because CheckoutFields::enqueue_scripts() registers the
+	 * shared script handle at the same hook priority — ordering is not guaranteed, so
+	 * wp_localize_script() would silently fail if it fires before registration.
 	 */
 	public function render_modal(): void {
 		if ( ! is_product() ) {
@@ -57,6 +39,17 @@ class RequestInfo {
 		$image_html = $image_id
 			? wp_get_attachment_image( $image_id, 'woocommerce_single', false, [ 'class' => 'tpfw-modal-product-img' ] )
 			: wc_placeholder_img( 'woocommerce_single' );
+
+		$config = wp_json_encode( [
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'i18n'    => [
+				'sending' => esc_html__( 'Sending…', 'tiered-pricing-for-woocommerce' ),
+				'error'   => esc_html__( 'Something went wrong. Please try again.', 'tiered-pricing-for-woocommerce' ),
+				'submit'  => esc_html__( 'Submit', 'tiered-pricing-for-woocommerce' ),
+			],
+		] );
+
+		echo '<script>var tpfwRequestInfo = ' . $config . ';</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		?>
 		<div id="tpfw-request-info-modal" class="tpfw-ri-modal" aria-hidden="true">
