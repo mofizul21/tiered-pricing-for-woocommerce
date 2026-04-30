@@ -1,3 +1,24 @@
+// Fix: WooLentor filters in groups with apply-action="button" don't respond to
+// individual filter changes — only the "Apply All" group button works. We detect
+// such changes and auto-trigger the group apply action so AJAX filtering fires
+// immediately without requiring the user to press Apply All each time.
+// setTimeout(0) ensures processTermFields() has updated data-wlpf-selected-terms
+// before the group action collects filter data.
+;(function () {
+	document.addEventListener('change', function (e) {
+		var filterWrap = e.target.closest('.wlpf-filter-wrap');
+		if (!filterWrap || filterWrap.getAttribute('data-wlpf-group-item') !== '1') { return; }
+
+		var groupWrap = filterWrap.closest('.wlpf-group-wrap');
+		if (!groupWrap || groupWrap.getAttribute('data-wlpf-apply-action') !== 'button') { return; }
+
+		setTimeout(function () {
+			var applyBtn = groupWrap.querySelector('.wlpf-group-apply-action-button');
+			if (applyBtn) { applyBtn.click(); }
+		}, 0);
+	});
+})();
+
 jQuery(function ($) {
 	'use strict';
 
