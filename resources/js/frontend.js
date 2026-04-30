@@ -13,19 +13,22 @@ jQuery(function ($) {
 		var minimumQuantity = parseInt($interface.data('min-quantity'), 10) || 0;
 		var totalQuantity = 0;
 		var hasAtLeastOneRow = false;
+		var missingColor = false;
 
+		// Validation pass — skip empty rows but never remove them here.
+		// Rows are only stripped after all checks pass to avoid disappearing
+		// rows when the user dismisses an alert and corrects their input.
 		$form.find('.tpfw-order-row').each(function () {
-			var qty = $(this).find('.tpfw-qty-input').val();
-			var color = $(this).find('.tpfw-color-select').val();
+			var qty   = ($(this).find('.tpfw-qty-input').val() || '').trim();
+			var color = ($(this).find('.tpfw-color-select').val() || '').trim();
 
-			if (qty || color) {
+			if (!qty && !color) { return; }
+
+			var n = parseInt(qty, 10);
+			if (Number.isInteger(n) && n > 0) {
 				hasAtLeastOneRow = true;
-				var n = parseInt(qty, 10);
-				if (Number.isInteger(n) && n > 0) {
-					totalQuantity += n;
-				}
-			} else {
-				$(this).remove();
+				totalQuantity += n;
+				if (!color) { missingColor = true; }
 			}
 		});
 
@@ -34,10 +37,22 @@ jQuery(function ($) {
 			return false;
 		}
 
+		if (missingColor) {
+			window.alert('Please select a color for each row.');
+			return false;
+		}
+
 		if (totalQuantity < minimumQuantity) {
 			window.alert('The total quantity must be at least ' + minimumQuantity + '.');
 			return false;
 		}
+
+		// All checks passed — strip blank rows before the form posts.
+		$form.find('.tpfw-order-row').each(function () {
+			var qty   = ($(this).find('.tpfw-qty-input').val() || '').trim();
+			var color = ($(this).find('.tpfw-color-select').val() || '').trim();
+			if (!qty && !color) { $(this).remove(); }
+		});
 
 		return true;
 	});

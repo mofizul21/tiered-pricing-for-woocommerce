@@ -16,29 +16,6 @@
 .single_add_to_cart_button.tpfw-loading {
 	opacity: 0.7;
 	cursor: not-allowed;
-	position: relative;
-	padding-left: 2.4em;
-
-	&::before {
-		content: '';
-		box-sizing: border-box;
-		position: absolute;
-		left: 0.7em;
-		top: 50%;
-		width: 1em;
-		height: 1em;
-		margin-top: -0.5em;
-		border: 2px solid currentColor;
-		border-top-color: transparent;
-		border-radius: 50%;
-		animation: tpfw-spin 0.7s linear infinite;
-	}
-}
-
-@keyframes tpfw-spin {
-	to {
-		transform: rotate(360deg);
-	}
 }
 
 // Checkout — Date in Hand: stretch the native calendar-picker indicator to cover

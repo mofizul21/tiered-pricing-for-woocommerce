@@ -202,16 +202,19 @@ class ProductPricingTable {
 
 					if ( ! hasQty ) {
 						e.preventDefault();
+						e.stopPropagation();
 						window.alert( 'Please fill out the Qty.' );
 						return;
 					}
 					if ( missingColor ) {
 						e.preventDefault();
+						e.stopPropagation();
 						window.alert( 'Please select a color for each row.' );
 						return;
 					}
 					if ( total < minQty ) {
 						e.preventDefault();
+						e.stopPropagation();
 						window.alert( 'The total quantity must be at least ' + minQty + '.' );
 						return;
 					}
@@ -225,11 +228,12 @@ class ProductPricingTable {
 						}
 					}
 
-					// Disable the button and show a spinner while the server processes.
+					// Disable the button and update its text while the server processes.
 					var btn = form.querySelector( '[type="submit"]' );
 					if ( btn ) {
 						btn.disabled = true;
 						btn.classList.add( 'tpfw-loading' );
+						btn.textContent = 'Adding to cart…';
 					}
 				} );
 			}
