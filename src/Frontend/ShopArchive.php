@@ -113,12 +113,18 @@ class ShopArchive {
 	}
 
 	/**
-	 * Detect whether the current request is the WooLentor quick view AJAX call.
+	 * Detect whether the current request is a supported quick view AJAX call.
+	 *
+	 * Supported sources:
+	 * - WooLentor / ShopLentor: action=woolentor_quickview
+	 * - Essential Addons for Elementor (Woo Product Gallery widget): action=eael_product_quickview_popup
 	 */
 	private function is_quickview_ajax(): bool {
-		return defined( 'DOING_AJAX' ) && DOING_AJAX
-			&& isset( $_REQUEST['action'] )
-			&& 'woolentor_quickview' === $_REQUEST['action'];
+		if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ! isset( $_REQUEST['action'] ) ) {
+			return false;
+		}
+
+		return in_array( $_REQUEST['action'], [ 'woolentor_quickview', 'eael_product_quickview_popup' ], true );
 	}
 
 	/**
