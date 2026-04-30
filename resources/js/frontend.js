@@ -1,26 +1,40 @@
-// Fix: WooLentor filters in groups with apply-action="button" don't respond to
-// individual filter changes — only the "Apply All" group button works. We detect
-// such changes and auto-trigger the group apply action so AJAX filtering fires
-// immediately without requiring the user to press Apply All each time.
-// setTimeout(0) ensures processTermFields() has updated data-wlpf-selected-terms
-// before the group action collects filter data.
-;(function () {
-	document.addEventListener('change', function (e) {
-		var filterWrap = e.target.closest('.wlpf-filter-wrap');
-		if (!filterWrap || filterWrap.getAttribute('data-wlpf-group-item') !== '1') { return; }
-
-		var groupWrap = filterWrap.closest('.wlpf-group-wrap');
-		if (!groupWrap || groupWrap.getAttribute('data-wlpf-apply-action') !== 'button') { return; }
-
-		setTimeout(function () {
-			var applyBtn = groupWrap.querySelector('.wlpf-group-apply-action-button');
-			if (applyBtn) { applyBtn.click(); }
-		}, 0);
-	});
-})();
-
 jQuery(function ($) {
 	'use strict';
+
+	// =========================================================================
+	// WooLentor filter — auto-AJAX for button-mode groups.
+	//
+	// Groups configured with apply-action="button" only respond to the
+	// "Apply All" button. Individual changes do nothing because
+	// processFilterRealApplyAction() returns 'button' for all items in such
+	// groups, and WooLentor skips AJAX.
+	//
+	// We auto-click the group's Apply All button on any filter interaction.
+	// jQuery .on() (not native addEventListener) is required so that
+	// jQuery-triggered change events from the jQuery UI price slider are also
+	// caught — native addEventListener misses those.
+	//
+	// Change handler covers: checkboxes, selects, price slider inputs.
+	// Keyup handler covers: search text field real-time input.
+	// =========================================================================
+
+	function wlpfAutoApply(target) {
+		var $filterWrap = $(target).closest('.wlpf-filter-wrap');
+		if (!$filterWrap.length || $filterWrap.attr('data-wlpf-group-item') !== '1') { return; }
+
+		var $groupWrap = $filterWrap.closest('.wlpf-group-wrap');
+		if (!$groupWrap.length || $groupWrap.attr('data-wlpf-apply-action') !== 'button') { return; }
+
+		// Defer so WooLentor's own handler (registered earlier, fires first)
+		// finishes updating data-wlpf-selected-terms / data-wlpf-range-*
+		// before the group action reads them.
+		setTimeout(function () {
+			$groupWrap.find('.wlpf-group-apply-action-button').first().trigger('click');
+		}, 0);
+	}
+
+	$(document).on('change', function (e) { wlpfAutoApply(e.target); });
+	$(document).on('keyup', '.wlpf-search-filter .wlpf-search-field', function () { wlpfAutoApply(this); });
 
 	// =========================================================================
 	// Product page — order form submit handler (external fallback validation).
