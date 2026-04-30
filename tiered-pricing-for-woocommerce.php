@@ -67,6 +67,55 @@ function tpfw_run_plugin(): void {
 add_action( 'plugins_loaded', 'tpfw_run_plugin' );
 
 /**
+ * Override ShopLentor's wlpf_get_range_prices() at priority 1 so our version
+ * wins before WooLentor Pro defines the same function at priority 10.
+ *
+ * The original reads one price per product via get_price(). For tiered products
+ * that single value is the regular WC price, which bears no relation to the
+ * actual tier prices. Our version collects every tier price across all products
+ * so the slider's min/max reflects the true purchasable price range.
+ */
+add_action( 'plugins_loaded', function () {
+	if ( function_exists( 'wlpf_get_range_prices' ) ) {
+		return;
+	}
+
+	function wlpf_get_range_prices(): array { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+		$all_prices = [];
+
+		$products = wc_get_products( [ 'limit' => -1 ] );
+
+		foreach ( $products as $product ) {
+			$product_id = $product->get_id();
+			$enabled    = get_post_meta( $product_id, '_tpfw_enable_pricing_table', true );
+			$tiers      = get_post_meta( $product_id, '_tpfw_pricing_table', true );
+
+			if ( 'yes' === $enabled && is_array( $tiers ) && ! empty( $tiers ) ) {
+				foreach ( $tiers as $tier ) {
+					if ( isset( $tier['price'] ) && '' !== $tier['price'] ) {
+						$all_prices[] = (float) $tier['price'];
+					}
+				}
+			} else {
+				$price = (float) $product->get_price();
+				if ( $price > 0 ) {
+					$all_prices[] = $price;
+				}
+			}
+		}
+
+		if ( empty( $all_prices ) ) {
+			return [ 'min' => 0, 'max' => 0 ];
+		}
+
+		return [
+			'min' => (int) floor( min( $all_prices ) ),
+			'max' => (int) ceil( max( $all_prices ) ),
+		];
+	}
+}, 1 );
+
+/**
  * Plugin activation tasks.
  */
 function tpfw_plugin_activation_tasks(): void {

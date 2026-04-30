@@ -10,7 +10,9 @@ class ProductSettings {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_product_options_pricing', [ $this, 'render_product_fields' ] );
-		add_action( 'woocommerce_process_product_meta', [ $this, 'save_product_fields' ] );
+		// Priority 20 — runs after WooCommerce saves _price/_regular_price at priority 10,
+		// so our _price override (min tier price) always wins.
+		add_action( 'woocommerce_process_product_meta', [ $this, 'save_product_fields' ], 20 );
 	}
 
 	/**
@@ -153,6 +155,8 @@ class ProductSettings {
 		$delivery     = isset( $_POST['_tpfw_delivery'] ) ? sanitize_textarea_field( wp_unslash( $_POST['_tpfw_delivery'] ) ) : '';
 		$raw_tiers    = isset( $_POST['tpfw_pricing_table'] ) ? wp_unslash( $_POST['tpfw_pricing_table'] ) : [];
 
+		$tiers = $this->sanitize_pricing_table( $raw_tiers );
+
 		update_post_meta( $product_id, '_tpfw_enable_pricing_table', $enabled );
 		update_post_meta( $product_id, '_tpfw_pricing_note', $pricing_note );
 		update_post_meta( $product_id, '_tpfw_themes', $themes );
@@ -160,7 +164,16 @@ class ProductSettings {
 		update_post_meta( $product_id, '_tpfw_additional', $additional );
 		update_post_meta( $product_id, '_tpfw_options', $options );
 		update_post_meta( $product_id, '_tpfw_delivery', $delivery );
-		update_post_meta( $product_id, '_tpfw_pricing_table', $this->sanitize_pricing_table( $raw_tiers ) );
+		update_post_meta( $product_id, '_tpfw_pricing_table', $tiers );
+
+		// Keep WooCommerce's _price meta in sync with our minimum tier price so
+		// price-range filters (which query _price BETWEEN min AND max) return this
+		// product when the user filters by our actual tier prices.
+		if ( 'yes' === $enabled && ! empty( $tiers ) ) {
+			$tier_prices = array_column( $tiers, 'price' );
+			$min_price   = (string) min( array_map( 'floatval', $tier_prices ) );
+			update_post_meta( $product_id, '_price', $min_price );
+		}
 	}
 
 	/**
