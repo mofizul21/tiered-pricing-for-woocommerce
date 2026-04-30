@@ -26,7 +26,6 @@ class ProductPricingTable {
 		add_action( 'wp', [ $this, 'maybe_replace_single_product_ui' ] );
 		add_shortcode( 'tpfw_pricing_table', [ $this, 'render_shortcode' ] );
 		add_action( 'wp_loaded', [ $this, 'handle_custom_add_to_cart' ] );
-		add_filter( 'woocommerce_get_price_html', [ $this, 'maybe_hide_single_price' ], 10, 2 );
 		add_filter( 'woocommerce_get_item_data', [ $this, 'render_cart_item_meta' ], 10, 2 );
 		add_filter( 'woocommerce_cart_item_name', [ $this, 'append_color_to_checkout_name' ], 10, 2 );
 		add_action( 'woocommerce_before_calculate_totals', [ $this, 'apply_cart_item_prices' ] );
@@ -42,6 +41,8 @@ class ProductPricingTable {
 		// Allowing qty edits in the cart would silently use the wrong price,
 		// so replace the editable input with plain read-only text.
 		add_filter( 'woocommerce_cart_item_quantity', [ $this, 'lock_cart_item_quantity' ], 10, 3 );
+
+		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'block_standard_add_to_cart_validation' ], 1, 2 );
 	}
 
 	/**
@@ -60,25 +61,6 @@ class ProductPricingTable {
 
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-	}
-
-	/**
-	 * Hide the regular price HTML on the custom-priced single product page.
-	 *
-	 * @param string     $price_html Existing price HTML.
-	 * @param WC_Product $product    Product object.
-	 * @return string
-	 */
-	public function maybe_hide_single_price( string $price_html, WC_Product $product ): string {
-		if ( is_admin() || ! is_product() ) {
-			return $price_html;
-		}
-
-		if ( get_queried_object_id() === $product->get_id() && $this->has_custom_pricing( $product->get_id() ) ) {
-			return '';
-		}
-
-		return $price_html;
 	}
 
 	/**
@@ -535,6 +517,26 @@ class ProductPricingTable {
 		$name .= '<p class="tpfw-checkout-color">Color: <span style="color:#ccc;">' . esc_html( $cart_item['tpfw_color_name'] ) . '</span></p>';
 
 		return $name;
+	}
+
+	/**
+	 * Block standard add-to-cart validation for custom-priced products.
+	 * The is_tpfw_adding flag lets our own cart flow bypass this gate.
+	 *
+	 * @param bool $passed     Whether validation passed so far.
+	 * @param int  $product_id Product being added.
+	 * @return bool
+	 */
+	public function block_standard_add_to_cart_validation( bool $passed, int $product_id ): bool {
+		if ( $this->is_tpfw_adding ) {
+			return $passed;
+		}
+
+		if ( $this->has_custom_pricing( $product_id ) ) {
+			return false;
+		}
+
+		return $passed;
 	}
 
 	/**

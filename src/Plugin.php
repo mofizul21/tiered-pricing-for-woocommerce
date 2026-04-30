@@ -11,6 +11,7 @@ use TieredPricingForWooCommerce\Core\WooCommerceStarter;
 use TieredPricingForWooCommerce\Frontend\CheckoutFields;
 use TieredPricingForWooCommerce\Frontend\ProductInfo;
 use TieredPricingForWooCommerce\Frontend\ProductPricingTable;
+use TieredPricingForWooCommerce\Frontend\ShopArchive;
 
 /**
  * Plugin class
@@ -81,6 +82,7 @@ final class Plugin {
 		new WooCommerceStarter();
         new ProductInfo();
         new ProductPricingTable();
+        new ShopArchive();
         new CheckoutFields();
     }
 
