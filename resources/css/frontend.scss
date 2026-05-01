@@ -299,38 +299,3 @@ body.tpfw-modal-open {
 	}
 }
 
-// ShopLentor price-filter loading spinner — override green icon color.
-.wlpf-loading::after {
-	color: var(--e-global-color-secondary) !important;
-}
-
-// ShopLentor quick-view loading spinner — the default is a green GIF that
-// cannot be tinted via CSS. Replace it with a CSS border-spinner so the
-// color can reference the Elementor secondary global color.
-body.woolentor-quickview-loader {
-	&::before {
-		// Keep the dark overlay but drop the GIF image.
-		content: '' !important;
-	}
-
-	&::after {
-		content: '';
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		width: 44px;
-		height: 44px;
-		margin: -22px 0 0 -22px;
-		border: 4px solid rgba(255, 255, 255, 0.3);
-		border-top-color: var(--e-global-color-secondary);
-		border-radius: 50%;
-		animation: tpfw-spin 0.75s linear infinite;
-		z-index: 10000;
-	}
-}
-
-@keyframes tpfw-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
