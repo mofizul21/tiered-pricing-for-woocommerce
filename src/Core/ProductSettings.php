@@ -166,13 +166,16 @@ class ProductSettings {
 		update_post_meta( $product_id, '_tpfw_delivery', $delivery );
 		update_post_meta( $product_id, '_tpfw_pricing_table', $tiers );
 
-		// Keep WooCommerce's _price meta in sync with our minimum tier price so
-		// price-range filters (which query _price BETWEEN min AND max) return this
-		// product when the user filters by our actual tier prices.
+		// Keep WooCommerce's _price in sync with the minimum tier price, and store
+		// _tpfw_max_price for the maximum tier price. PriceFilter::fix_query() uses
+		// both to perform an overlap check so the ShopLentor price-range slider
+		// correctly matches products whose tier range intersects the filter range.
 		if ( 'yes' === $enabled && ! empty( $tiers ) ) {
-			$tier_prices = array_column( $tiers, 'price' );
-			$min_price   = (string) min( array_map( 'floatval', $tier_prices ) );
-			update_post_meta( $product_id, '_price', $min_price );
+			$tier_prices  = array_map( 'floatval', array_column( $tiers, 'price' ) );
+			update_post_meta( $product_id, '_price', (string) min( $tier_prices ) );
+			update_post_meta( $product_id, '_tpfw_max_price', (string) max( $tier_prices ) );
+		} else {
+			delete_post_meta( $product_id, '_tpfw_max_price' );
 		}
 	}
 

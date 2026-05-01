@@ -45,6 +45,7 @@ require_once __DIR__ . '/src/Admin/Admin.php';
 require_once __DIR__ . '/src/Core/ProductColors.php';
 require_once __DIR__ . '/src/Core/ProductSettings.php';
 require_once __DIR__ . '/src/Core/WooCommerceStarter.php';
+require_once __DIR__ . '/src/Frontend/PriceFilter.php';
 require_once __DIR__ . '/src/Frontend/ProductInfo.php';
 require_once __DIR__ . '/src/Frontend/ProductPricingTable.php';
 require_once __DIR__ . '/src/Frontend/ShopArchive.php';

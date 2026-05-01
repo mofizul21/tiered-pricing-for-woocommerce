@@ -9,6 +9,7 @@ use TieredPricingForWooCommerce\Core\ProductColors;
 use TieredPricingForWooCommerce\Core\ProductSettings;
 use TieredPricingForWooCommerce\Core\WooCommerceStarter;
 use TieredPricingForWooCommerce\Frontend\CheckoutFields;
+use TieredPricingForWooCommerce\Frontend\PriceFilter;
 use TieredPricingForWooCommerce\Frontend\ProductInfo;
 use TieredPricingForWooCommerce\Frontend\ProductPricingTable;
 use TieredPricingForWooCommerce\Frontend\RequestInfo;
@@ -81,6 +82,7 @@ final class Plugin {
 		new ProductColors();
 		new ProductSettings();
 		new WooCommerceStarter();
+        new PriceFilter();
         new ProductInfo();
         new ProductPricingTable();
         new ShopArchive();
