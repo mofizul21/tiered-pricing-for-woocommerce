@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tiered Pricing for WooCommerce 1.0.0\n"
 "Report-Msgid-Bugs-To: https://mofizul.com/support/\n"
-"POT-Creation-Date: 2026-04-30 05:26:14+00:00\n"
+"POT-Creation-Date: 2026-05-01 06:10:45+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -131,7 +131,7 @@ msgid "Colors"
 msgstr ""
 
 #: src/Core/ProductColors.php:21 src/Frontend/ProductPricingTable.php:126
-#: src/Frontend/ProductPricingTable.php:500
+#: src/Frontend/ProductPricingTable.php:504
 msgid "Color"
 msgstr ""
 
@@ -159,77 +159,77 @@ msgstr ""
 msgid "New Color Name"
 msgstr ""
 
-#: src/Core/ProductSettings.php:41
+#: src/Core/ProductSettings.php:43
 msgid "Enable pricing table"
 msgstr ""
 
-#: src/Core/ProductSettings.php:42
+#: src/Core/ProductSettings.php:44
 msgid ""
 "Use the custom quantity pricing table and order builder on the single "
 "product page."
 msgstr ""
 
-#: src/Core/ProductSettings.php:47
+#: src/Core/ProductSettings.php:49
 msgid "Pricing table"
 msgstr ""
 
-#: src/Core/ProductSettings.php:51
+#: src/Core/ProductSettings.php:53
 msgid "Minimum quantity"
 msgstr ""
 
-#: src/Core/ProductSettings.php:52
+#: src/Core/ProductSettings.php:54
 msgid "Your price (each)"
 msgstr ""
 
-#: src/Core/ProductSettings.php:53
+#: src/Core/ProductSettings.php:55
 msgid "Actions"
 msgstr ""
 
-#: src/Core/ProductSettings.php:61
+#: src/Core/ProductSettings.php:63
 msgid "Add Row"
 msgstr ""
 
-#: src/Core/ProductSettings.php:64
+#: src/Core/ProductSettings.php:66
 msgid ""
 "Add one row for each quantity break. The first row is the minimum order "
 "quantity."
 msgstr ""
 
-#: src/Core/ProductSettings.php:70
+#: src/Core/ProductSettings.php:72
 msgid "Table note"
 msgstr ""
 
-#: src/Core/ProductSettings.php:71
+#: src/Core/ProductSettings.php:73
 msgid "Optional text displayed below the pricing table on the frontend."
 msgstr ""
 
-#: src/Core/ProductSettings.php:79 src/Frontend/ProductInfo.php:67
+#: src/Core/ProductSettings.php:81 src/Frontend/ProductInfo.php:67
 msgid "Themes"
 msgstr ""
 
-#: src/Core/ProductSettings.php:80 src/Core/ProductSettings.php:89
-#: src/Core/ProductSettings.php:98 src/Core/ProductSettings.php:107
-#: src/Core/ProductSettings.php:116
+#: src/Core/ProductSettings.php:82 src/Core/ProductSettings.php:91
+#: src/Core/ProductSettings.php:100 src/Core/ProductSettings.php:109
+#: src/Core/ProductSettings.php:118
 msgid "Additional product information tab content."
 msgstr ""
 
-#: src/Core/ProductSettings.php:88 src/Frontend/ProductInfo.php:68
+#: src/Core/ProductSettings.php:90 src/Frontend/ProductInfo.php:68
 msgid "Imprint"
 msgstr ""
 
-#: src/Core/ProductSettings.php:97 src/Frontend/ProductInfo.php:69
+#: src/Core/ProductSettings.php:99 src/Frontend/ProductInfo.php:69
 msgid "Additional"
 msgstr ""
 
-#: src/Core/ProductSettings.php:106 src/Frontend/ProductInfo.php:70
+#: src/Core/ProductSettings.php:108 src/Frontend/ProductInfo.php:70
 msgid "Options"
 msgstr ""
 
-#: src/Core/ProductSettings.php:115 src/Frontend/ProductInfo.php:71
+#: src/Core/ProductSettings.php:117 src/Frontend/ProductInfo.php:71
 msgid "Delivery"
 msgstr ""
 
-#: src/Core/ProductSettings.php:137 src/Frontend/CheckoutFields.php:78
+#: src/Core/ProductSettings.php:139 src/Frontend/CheckoutFields.php:78
 msgid "Remove"
 msgstr ""
 
@@ -359,40 +359,40 @@ msgstr ""
 msgid "Request Info"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:259
+#: src/Frontend/ProductPricingTable.php:263
 msgid "Select color"
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:331
+#: src/Frontend/ProductPricingTable.php:335
 msgid "Unable to add this product to the cart. Please refresh and try again."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:343
+#: src/Frontend/ProductPricingTable.php:347
 msgid "This product is not available for custom pricing."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:378
+#: src/Frontend/ProductPricingTable.php:382
 msgid "Each order row must have a quantity greater than zero."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:383
+#: src/Frontend/ProductPricingTable.php:387
 msgid "Please choose a valid color for each order row."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:396
+#: src/Frontend/ProductPricingTable.php:400
 msgid "Please add at least one quantity and color combination."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:404
+#: src/Frontend/ProductPricingTable.php:408
 #. translators: 1: total quantity, 2: minimum quantity
 msgid "Minimum total quantity is %2$s. Your current total is %1$s."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:416
+#: src/Frontend/ProductPricingTable.php:420
 msgid "Unable to match the total quantity to a pricing tier."
 msgstr ""
 
-#: src/Frontend/ProductPricingTable.php:458
+#: src/Frontend/ProductPricingTable.php:462
 msgid "None of the rows could be added to the cart. Please try again."
 msgstr ""
 
@@ -472,7 +472,7 @@ msgstr ""
 msgid "Purchase"
 msgstr ""
 
-#: src/Plugin.php:159
+#: src/Plugin.php:161
 msgid ""
 "Tiered Pricing for WooCommerce requires WooCommerce to be installed and "
 "active."
