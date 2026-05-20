@@ -22,7 +22,6 @@ class Admin {
 
 		add_filter( 'woocommerce_screen_ids', [ $this, 'add_screen_ids' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_filter( 'admin_footer_text', [ $this, 'admin_footer_text' ], PHP_INT_MAX );
 		add_filter( 'update_footer', [ $this, 'update_footer' ], PHP_INT_MAX );
 	}
@@ -63,7 +62,8 @@ class Admin {
 	 * @return string The modified footer text.
 	 */
 	public function admin_footer_text( string $text ): string {
-		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
+		$screen = get_current_screen();
+		if ( $screen && in_array( $screen->id, $this->get_screen_ids(), true ) ) {
 			$plugin_data = get_plugin_data( TPFW_PLUGIN_FILE );
 			$plugin_name = $plugin_data['Name'];
 
@@ -85,8 +85,8 @@ class Admin {
 	 * @return string The modified footer text.
 	 */
 	public function update_footer( string $text ): string {
-
-		if ( in_array( get_current_screen()->id, $this->get_screen_ids(), true ) ) {
+		$screen = get_current_screen();
+		if ( $screen && in_array( $screen->id, $this->get_screen_ids(), true ) ) {
 			$plugin_data = get_plugin_data( TPFW_PLUGIN_FILE );
 			$version = $plugin_data['Version'];
 
@@ -115,15 +115,4 @@ class Admin {
 		}
 	}
 
-	/**
-	 * Enqueue frontend assets when the starter display is enabled.
-	 */
-	public function enqueue_frontend_assets(): void {
-		if ( 'yes' !== get_option( 'tpfw_enable_frontend_display', 'yes' ) ) {
-			return;
-		}
-
-		wp_enqueue_style( 'tpfw-frontend-style', plugins_url( 'assets/css/frontend.css', TPFW_PLUGIN_FILE ), [], TPFW_VERSION );
-		wp_enqueue_script( 'tpfw-frontend-script', plugins_url( 'assets/js/frontend.js', TPFW_PLUGIN_FILE ), [ 'jquery' ], TPFW_VERSION, true );
-	}
 }

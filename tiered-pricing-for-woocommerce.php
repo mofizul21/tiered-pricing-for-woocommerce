@@ -34,10 +34,6 @@ if ( ! defined( 'TPFW_PLUGIN_PATH' ) ) {
 	define( 'TPFW_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 }
 
-if ( ! defined( 'TPFW_PLUGIN_URL' ) ) {
-	define( 'TPFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-}
-
 require_once __DIR__ . '/src/Core/Base/Settings.php';
 require_once __DIR__ . '/src/Admin/Settings.php';
 require_once __DIR__ . '/src/Admin/Menus.php';
@@ -82,36 +78,47 @@ add_action( 'plugins_loaded', function () {
 	}
 
 	function wlpf_get_range_prices(): array { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-		$all_prices = [];
+		global $wpdb;
 
-		$products = wc_get_products( [ 'limit' => -1 ] );
+		// _price holds the min tier price for tiered products and the regular/sale
+		// price for standard products — maintained by ProductSettings and PriceFilter.
+		// _tpfw_max_price holds the max tier price for tiered products only.
+		// Two aggregate queries are far cheaper than loading every WC_Product object.
+		$min = (float) $wpdb->get_var(
+			"SELECT MIN(CAST(pm.meta_value AS DECIMAL(10,4)))
+			 FROM {$wpdb->postmeta} pm
+			 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+			 WHERE pm.meta_key = '_price'
+			   AND pm.meta_value != ''
+			   AND p.post_type = 'product'
+			   AND p.post_status = 'publish'"
+		);
 
-		foreach ( $products as $product ) {
-			$product_id = $product->get_id();
-			$enabled    = get_post_meta( $product_id, '_tpfw_enable_pricing_table', true );
-			$tiers      = get_post_meta( $product_id, '_tpfw_pricing_table', true );
+		$max_standard = (float) $wpdb->get_var(
+			"SELECT MAX(CAST(pm.meta_value AS DECIMAL(10,4)))
+			 FROM {$wpdb->postmeta} pm
+			 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+			 WHERE pm.meta_key = '_price'
+			   AND pm.meta_value != ''
+			   AND p.post_type = 'product'
+			   AND p.post_status = 'publish'"
+		);
 
-			if ( 'yes' === $enabled && is_array( $tiers ) && ! empty( $tiers ) ) {
-				foreach ( $tiers as $tier ) {
-					if ( isset( $tier['price'] ) && '' !== $tier['price'] ) {
-						$all_prices[] = (float) $tier['price'];
-					}
-				}
-			} else {
-				$price = (float) $product->get_price();
-				if ( $price > 0 ) {
-					$all_prices[] = $price;
-				}
-			}
-		}
+		$max_tiered = (float) $wpdb->get_var(
+			"SELECT MAX(CAST(pm.meta_value AS DECIMAL(10,4)))
+			 FROM {$wpdb->postmeta} pm
+			 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+			 WHERE pm.meta_key = '_tpfw_max_price'
+			   AND pm.meta_value != ''
+			   AND p.post_type = 'product'
+			   AND p.post_status = 'publish'"
+		);
 
-		if ( empty( $all_prices ) ) {
-			return [ 'min' => 0, 'max' => 0 ];
-		}
+		$max = max( $max_standard, $max_tiered );
 
 		return [
-			'min' => (int) floor( min( $all_prices ) ),
-			'max' => (int) ceil( max( $all_prices ) ),
+			'min' => (int) floor( $min ),
+			'max' => (int) ceil( $max ),
 		];
 	}
 }, 1 );

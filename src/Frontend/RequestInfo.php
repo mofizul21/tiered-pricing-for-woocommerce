@@ -152,8 +152,9 @@ class RequestInfo {
 		$zip             = isset( $_POST['zip'] ) ? sanitize_text_field( wp_unslash( $_POST['zip'] ) ) : '';
 		$qty             = isset( $_POST['qty'] ) ? absint( $_POST['qty'] ) : 0;
 		$additional_info = isset( $_POST['additional_info'] ) ? sanitize_textarea_field( wp_unslash( $_POST['additional_info'] ) ) : '';
-		$product_name    = isset( $_POST['product_name'] ) ? sanitize_text_field( wp_unslash( $_POST['product_name'] ) ) : '';
 		$product_id      = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
+		$product         = $product_id ? wc_get_product( $product_id ) : null;
+		$product_name    = $product instanceof WC_Product ? $product->get_name() : '';
 
 		if ( empty( $full_name ) ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Please enter your full name.', 'tiered-pricing-for-woocommerce' ) ] );

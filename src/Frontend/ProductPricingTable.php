@@ -402,9 +402,7 @@ class ProductPricingTable {
 		// incrementing counter, guaranteeing a distinct cart_item_key per row.
 		$this->is_tpfw_adding = true;
 
-		foreach ( $valid_rows as $index => $row ) {
-			$cart_count_before = count( WC()->cart->get_cart() );
-
+		foreach ( $valid_rows as $row ) {
 			$added = WC()->cart->add_to_cart(
 				$product_id,
 				$row['quantity'],
@@ -419,8 +417,6 @@ class ProductPricingTable {
 					'tpfw_total_qty'      => $total_quantity,
 				]
 			);
-
-			$cart_count_after = count( WC()->cart->get_cart() );
 
 			// Dump any WC error notices that appeared during this add.
 			$notices = wc_get_notices( 'error' );

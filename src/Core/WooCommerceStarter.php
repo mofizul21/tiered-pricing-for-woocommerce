@@ -10,7 +10,6 @@ class WooCommerceStarter {
 	 */
 	public function __construct() {
 		add_filter( 'plugin_action_links_' . plugin_basename( TPFW_PLUGIN_FILE ), [ $this, 'add_action_links' ] );
-		add_action( 'woocommerce_init', [ $this, 'register_feature_notice' ] );
 	}
 
 	/**
@@ -31,10 +30,5 @@ class WooCommerceStarter {
 		return $links;
 	}
 
-	/**
-	 * Register a minimal placeholder note for future feature work.
-	 */
-	public function register_feature_notice(): void {
-		do_action( 'tpfw_loaded' );
-	}
+
 }
