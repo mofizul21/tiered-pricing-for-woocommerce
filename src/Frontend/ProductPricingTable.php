@@ -43,6 +43,8 @@ class ProductPricingTable {
 		add_filter( 'woocommerce_cart_item_quantity', [ $this, 'lock_cart_item_quantity' ], 10, 3 );
 
 		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'block_standard_add_to_cart_validation' ], 1, 2 );
+
+		add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'save_order_item_custom_options' ], 10, 3 );
 	}
 
 	/**
@@ -77,15 +79,17 @@ class ProductPricingTable {
 			return '';
 		}
 
-		$tiers      = $this->get_pricing_table( $product->get_id() );
-		$colors     = $this->get_product_colors( $product->get_id() );
-		$note       = get_post_meta( $product->get_id(), '_tpfw_pricing_note', true );
-		$min_qty    = $tiers[0]['quantity'];
-		$tiers_json = wp_json_encode( $tiers );
+		$tiers          = $this->get_pricing_table( $product->get_id() );
+		$colors         = $this->get_product_colors( $product->get_id() );
+		$dropdowns      = $this->get_custom_dropdowns( $product->get_id() );
+		$note           = get_post_meta( $product->get_id(), '_tpfw_pricing_note', true );
+		$min_qty        = $tiers[0]['quantity'];
+		$tiers_json     = wp_json_encode( $tiers );
+		$dropdowns_json = wp_json_encode( $dropdowns );
 
 		ob_start();
 		?>
-		<div class="tpfw-pricing-interface" data-min-quantity="<?php echo esc_attr( (string) $min_qty ); ?>" data-pricing-table="<?php echo esc_attr( $tiers_json ? $tiers_json : '[]' ); ?>" data-currency-symbol="<?php echo esc_attr( html_entity_decode( get_woocommerce_currency_symbol() ) ); ?>">
+		<div class="tpfw-pricing-interface" data-min-quantity="<?php echo esc_attr( (string) $min_qty ); ?>" data-pricing-table="<?php echo esc_attr( $tiers_json ? $tiers_json : '[]' ); ?>" data-custom-dropdowns="<?php echo esc_attr( $dropdowns_json ? $dropdowns_json : '[]' ); ?>" data-currency-symbol="<?php echo esc_attr( html_entity_decode( get_woocommerce_currency_symbol() ) ); ?>">
 			<div class="tpfw-pricing-table-wrapper">
 				<table class="shop_table tpfw-tier-table">
 					<thead>
@@ -123,13 +127,17 @@ class ProductPricingTable {
 						<thead>
 							<tr>
 								<th><?php esc_html_e( 'Qty*', 'tiered-pricing-for-woocommerce' ); ?></th>
-								<th><?php esc_html_e( 'Color', 'tiered-pricing-for-woocommerce' ); ?></th>
+								<th><?php echo empty( $dropdowns ) ? esc_html__( 'Color', 'tiered-pricing-for-woocommerce' ) : esc_html__( 'Color / Options', 'tiered-pricing-for-woocommerce' ); ?></th>
 							</tr>
 						</thead>
 						<tbody class="tpfw-order-rows">
-							<?php $this->render_order_row( 0, $colors, $min_qty ); ?>
+							<?php $this->render_order_row( 0, $colors, $min_qty, $dropdowns ); ?>
 						</tbody>
 					</table>
+
+					<?php if ( ! empty( $dropdowns ) ) : ?>
+						<div class="tpfw-price-summary" style="display:none;"></div>
+					<?php endif; ?>
 
 					<p class="tpfw-order-help">
 						<?php
@@ -149,96 +157,6 @@ class ProductPricingTable {
 			<?php endif; ?>
 		</div>
 
-		<script>
-		(function () {
-			function tpfwEnsureRow( form ) {
-				var rows = Array.prototype.slice.call( form.querySelectorAll( '.tpfw-order-row' ) );
-				if ( ! rows.length ) return;
-				var lastQty = ( rows[ rows.length - 1 ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
-				var hasBlank = rows.some( function ( row ) {
-					return ! ( row.querySelector( '.tpfw-qty-input' ).value || '' ).trim() &&
-					       ! ( row.querySelector( '.tpfw-color-select' ).value || '' ).trim();
-				} );
-				if ( lastQty && ! hasBlank ) {
-					var tbody = form.querySelector( '.tpfw-order-rows' );
-					var allRows = tbody.querySelectorAll( '.tpfw-order-row' );
-					var last   = allRows[ allRows.length - 1 ];
-					var idx    = allRows.length;
-					var clone  = last.cloneNode( true );
-					clone.querySelector( '.tpfw-qty-input' ).value = '';
-					clone.querySelector( '.tpfw-qty-input' ).name  = 'tpfw_order_rows[' + idx + '][quantity]';
-					clone.querySelector( '.tpfw-color-select' ).value = '';
-					clone.querySelector( '.tpfw-color-select' ).name  = 'tpfw_order_rows[' + idx + '][color]';
-					tbody.appendChild( clone );
-				}
-			}
-			window.tpfwQtyChanged   = function ( el ) { var f = el.closest( '.tpfw-order-form' ); if ( f ) tpfwEnsureRow( f ); };
-			window.tpfwColorChanged = function ( el ) { var f = el.closest( '.tpfw-order-form' ); if ( f ) tpfwEnsureRow( f ); };
-
-			var forms = document.querySelectorAll( '.tpfw-order-form:not([data-tpfw-submit])' );
-			for ( var fi = 0; fi < forms.length; fi++ ) {
-				forms[ fi ].setAttribute( 'data-tpfw-submit', '1' );
-				forms[ fi ].addEventListener( 'submit', function ( e ) {
-					var form         = e.currentTarget;
-					var iface        = form.closest( '.tpfw-pricing-interface' );
-					var minQty       = iface ? ( parseInt( iface.getAttribute( 'data-min-quantity' ), 10 ) || 0 ) : 0;
-					var rows         = Array.prototype.slice.call( form.querySelectorAll( '.tpfw-order-row' ) );
-					var total        = 0;
-					var hasQty       = false;
-					var missingColor = false;
-
-					// Validate only — do NOT touch the DOM yet.
-					for ( var i = 0; i < rows.length; i++ ) {
-						var qty   = ( rows[ i ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
-						var color = ( rows[ i ].querySelector( '.tpfw-color-select' ).value || '' ).trim();
-						if ( ! qty && ! color ) { continue; }
-						var n = parseInt( qty, 10 );
-						if ( ! isNaN( n ) && n > 0 ) {
-							hasQty = true;
-							total += n;
-							if ( ! color ) { missingColor = true; }
-						}
-					}
-
-					if ( ! hasQty ) {
-						e.preventDefault();
-						e.stopPropagation();
-						window.alert( 'Please fill out the Qty.' );
-						return;
-					}
-					if ( missingColor ) {
-						e.preventDefault();
-						e.stopPropagation();
-						window.alert( 'Please select a color for each row.' );
-						return;
-					}
-					if ( total < minQty ) {
-						e.preventDefault();
-						e.stopPropagation();
-						window.alert( 'The total quantity must be at least ' + minQty + '.' );
-						return;
-					}
-
-					// All checks passed — strip blank rows before the form submits.
-					for ( var j = 0; j < rows.length; j++ ) {
-						var q = ( rows[ j ].querySelector( '.tpfw-qty-input' ).value || '' ).trim();
-						var c = ( rows[ j ].querySelector( '.tpfw-color-select' ).value || '' ).trim();
-						if ( ! q && ! c ) {
-							rows[ j ].parentNode && rows[ j ].parentNode.removeChild( rows[ j ] );
-						}
-					}
-
-					// Disable the button and update its text while the server processes.
-					var btn = form.querySelector( '[type="submit"]' );
-					if ( btn ) {
-						btn.disabled = true;
-						btn.classList.add( 'tpfw-loading' );
-						btn.textContent = 'Adding to cart…';
-					}
-				} );
-			}
-		})();
-		</script>
 		<?php
 
 		return (string) ob_get_clean();
@@ -247,24 +165,46 @@ class ProductPricingTable {
 	/**
 	 * Render one frontend order row.
 	 *
-	 * @param int|string $index   Row index.
-	 * @param array      $colors  Allowed colors.
-	 * @param int        $min_qty Minimum quantity.
+	 * @param int|string $index     Row index.
+	 * @param array      $colors    Allowed colors.
+	 * @param int        $min_qty   Minimum quantity (unused here; kept for context).
+	 * @param array      $dropdowns Custom dropdown groups.
 	 */
-	private function render_order_row( $index, array $colors, int $min_qty ): void {
+	private function render_order_row( $index, array $colors, int $min_qty, array $dropdowns = [] ): void {
 		?>
 		<tr class="tpfw-order-row">
 			<td class="tpfw-order-field">
-				<input type="number" name="tpfw_order_rows[<?php echo esc_attr( (string) $index ); ?>][quantity]" min="1" step="1" class="tpfw-qty-input" inputmode="numeric" oninput="tpfwQtyChanged(this)" onchange="tpfwQtyChanged(this)">
+				<input type="number" name="tpfw_order_rows[<?php echo esc_attr( (string) $index ); ?>][quantity]" min="1" step="1" class="tpfw-qty-input" inputmode="numeric">
 			</td>
 
-			<td class="tpfw-order-field">
-				<select name="tpfw_order_rows[<?php echo esc_attr( (string) $index ); ?>][color]" class="tpfw-color-select" onchange="tpfwColorChanged(this)">
+			<td class="tpfw-order-field tpfw-order-options">
+				<select name="tpfw_order_rows[<?php echo esc_attr( (string) $index ); ?>][color]" class="tpfw-color-select">
 					<option value=""><?php esc_html_e( 'Select color', 'tiered-pricing-for-woocommerce' ); ?></option>
 					<?php foreach ( $colors as $color ) : ?>
 						<option value="<?php echo esc_attr( (string) $color['id'] ); ?>"><?php echo esc_html( $color['name'] ); ?></option>
 					<?php endforeach; ?>
 				</select>
+
+				<?php foreach ( $dropdowns as $di => $dropdown ) :
+					$required_attr = ! empty( $dropdown['required'] ) ? ' data-required="1"' : ' data-required="0"';
+					?>
+					<div class="tpfw-select-wrap">
+						<span class="tpfw-select-label">
+							<?php echo esc_html( $dropdown['label'] ); ?>
+							<?php if ( ! empty( $dropdown['required'] ) ) : ?><span>*</span><?php endif; ?>
+						</span>
+						<select name="tpfw_order_rows[<?php echo esc_attr( (string) $index ); ?>][custom][<?php echo esc_attr( (string) $di ); ?>]" class="tpfw-custom-select"<?php echo $required_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+							<option value=""><?php echo esc_html( $dropdown['label'] ); ?></option>
+							<?php foreach ( $dropdown['options'] as $oi => $option ) :
+								$price_text = $option['price'] > 0 ? ' (+' . html_entity_decode( strip_tags( wc_price( (float) $option['price'] ) ) ) . ')' : '';
+								?>
+								<option value="<?php echo esc_attr( (string) $oi ); ?>" data-price="<?php echo esc_attr( (string) $option['price'] ); ?>">
+									<?php echo esc_html( $option['label'] . $price_text ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+				<?php endforeach; ?>
 			</td>
 		</tr>
 		<?php
@@ -313,7 +253,7 @@ class ProductPricingTable {
 	 * @return array
 	 */
 	public function restore_tpfw_cart_item_data( array $cart_item, array $values ): array {
-		foreach ( [ 'tpfw_color_id', 'tpfw_color_name', 'tpfw_unit_price', 'tpfw_total_qty', 'tpfw_unique' ] as $key ) {
+		foreach ( [ 'tpfw_color_id', 'tpfw_color_name', 'tpfw_unit_price', 'tpfw_options_price', 'tpfw_custom_options', 'tpfw_total_qty', 'tpfw_unique' ] as $key ) {
 			if ( isset( $values[ $key ] ) && ! isset( $cart_item[ $key ] ) ) {
 				$cart_item[ $key ] = $values[ $key ];
 			}
@@ -351,6 +291,7 @@ class ProductPricingTable {
 		$tiers     = $this->get_pricing_table( $product_id );
 		$min_qty   = $tiers[0]['quantity'];
 		$colors    = $this->get_product_colors( $product_id );
+		$dropdowns = $this->get_custom_dropdowns( $product_id );
 		$color_map = [];
 
 		foreach ( $colors as $color ) {
@@ -388,10 +329,44 @@ class ProductPricingTable {
 				return;
 			}
 
+			$custom_raw     = isset( $row['custom'] ) && is_array( $row['custom'] ) ? $row['custom'] : [];
+			$options_price  = 0.0;
+			$custom_options = [];
+
+			foreach ( $dropdowns as $di => $dropdown ) {
+				$selected_oi = isset( $custom_raw[ $di ] ) ? (int) $custom_raw[ $di ] : -1;
+
+				if ( $selected_oi < 0 || ! isset( $dropdown['options'][ $selected_oi ] ) ) {
+					if ( ! empty( $dropdown['required'] ) ) {
+						wc_add_notice(
+							sprintf(
+								/* translators: %s: dropdown label */
+								esc_html__( 'Please select an option for "%s".', 'tiered-pricing-for-woocommerce' ),
+								esc_html( $dropdown['label'] )
+							),
+							'error'
+						);
+						return;
+					}
+					continue;
+				}
+
+				$opt            = $dropdown['options'][ $selected_oi ];
+				$opt_price      = (float) $opt['price'];
+				$options_price += $opt_price;
+				$custom_options[] = [
+					'label' => $dropdown['label'],
+					'value' => $opt['label'],
+					'price' => $opt_price,
+				];
+			}
+
 			$valid_rows[] = [
-				'quantity'   => $quantity,
-				'color_id'   => $color_id,
-				'color_name' => $color_map[ $color_id ],
+				'quantity'       => $quantity,
+				'color_id'       => $color_id,
+				'color_name'     => $color_map[ $color_id ],
+				'options_price'  => $options_price,
+				'custom_options' => $custom_options,
 			];
 			$total_quantity += $quantity;
 		}
@@ -436,10 +411,12 @@ class ProductPricingTable {
 				0,
 				[],
 				[
-					'tpfw_color_id'   => $row['color_id'],
-					'tpfw_color_name' => $row['color_name'],
-					'tpfw_unit_price' => $unit_price,
-					'tpfw_total_qty'  => $total_quantity,
+					'tpfw_color_id'       => $row['color_id'],
+					'tpfw_color_name'     => $row['color_name'],
+					'tpfw_unit_price'     => $unit_price,
+					'tpfw_options_price'  => $row['options_price'],
+					'tpfw_custom_options' => $row['custom_options'],
+					'tpfw_total_qty'      => $total_quantity,
 				]
 			);
 
@@ -486,7 +463,8 @@ class ProductPricingTable {
 				continue;
 			}
 
-			$cart_item['data']->set_price( (float) $cart_item['tpfw_unit_price'] );
+			$options_price = isset( $cart_item['tpfw_options_price'] ) ? (float) $cart_item['tpfw_options_price'] : 0.0;
+			$cart_item['data']->set_price( (float) $cart_item['tpfw_unit_price'] + $options_price );
 		}
 	}
 
@@ -506,7 +484,54 @@ class ProductPricingTable {
 			];
 		}
 
+		if ( ! empty( $cart_item['tpfw_custom_options'] ) ) {
+			foreach ( (array) $cart_item['tpfw_custom_options'] as $opt ) {
+				$label = wc_clean( $opt['label'] ?? '' );
+				$value = wc_clean( $opt['value'] ?? '' );
+				$price = (float) ( $opt['price'] ?? 0 );
+
+				if ( ! $label || ! $value ) {
+					continue;
+				}
+
+				$item_data[] = [
+					'key'   => $label,
+					'value' => $price > 0 ? $value . ' (+' . wp_strip_all_tags( wc_price( $price ) ) . ')' : $value,
+				];
+			}
+		}
+
 		return $item_data;
+	}
+
+	/**
+	 * Save custom option selections to order item meta for emails and order views.
+	 *
+	 * @param \WC_Order_Item_Product $item          Order line item.
+	 * @param string                 $cart_item_key Cart item key.
+	 * @param array                  $values        Cart item session values.
+	 */
+	public function save_order_item_custom_options( \WC_Order_Item_Product $item, string $cart_item_key, array $values ): void {
+		if ( ! empty( $values['tpfw_color_name'] ) ) {
+			$item->add_meta_data( esc_html__( 'Color', 'tiered-pricing-for-woocommerce' ), wc_clean( $values['tpfw_color_name'] ) );
+		}
+
+		if ( ! empty( $values['tpfw_custom_options'] ) ) {
+			foreach ( (array) $values['tpfw_custom_options'] as $opt ) {
+				$label = $opt['label'] ?? '';
+				$value = $opt['value'] ?? '';
+				$price = (float) ( $opt['price'] ?? 0 );
+
+				if ( ! $label || ! $value ) {
+					continue;
+				}
+
+				$item->add_meta_data(
+					wc_clean( $label ),
+					$price > 0 ? wc_clean( $value ) . ' (+' . wp_strip_all_tags( wc_price( $price ) ) . ')' : wc_clean( $value )
+				);
+			}
+		}
 	}
 
 	/**
@@ -589,6 +614,17 @@ class ProductPricingTable {
 		}
 
 		return $matched;
+	}
+
+	/**
+	 * Get custom dropdown definitions for a product.
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array
+	 */
+	private function get_custom_dropdowns( int $product_id ): array {
+		$dropdowns = get_post_meta( $product_id, '_tpfw_custom_dropdowns', true );
+		return is_array( $dropdowns ) ? $dropdowns : [];
 	}
 
 	/**

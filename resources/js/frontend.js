@@ -37,23 +37,106 @@ jQuery(function ($) {
 	$(document).on('keyup', '.wlpf-search-filter .wlpf-search-field', function () { wlpfAutoApply(this); });
 
 	// =========================================================================
-	// Product page — order form submit handler (external fallback validation).
-	// The inline <script> in the shortcode handles the primary logic; this
-	// catches any edge-case submission that bypasses the inline handler.
+	// Product page — order form: row cloning, price preview, validation.
 	// =========================================================================
 
-	$(document).on('submit', '.tpfw-order-form', function () {
-		var $form = $(this);
-		var $interface = $form.closest('.tpfw-pricing-interface');
-		var minimumQuantity = parseInt($interface.data('min-quantity'), 10) || 0;
-		var totalQuantity = 0;
-		var hasAtLeastOneRow = false;
-		var missingColor = false;
+	function tpfwEnsureRow($form) {
+		var $rows = $form.find('.tpfw-order-row');
+		if (!$rows.length) { return; }
 
-		// Validation pass — skip empty rows but never remove them here.
-		// Rows are only stripped after all checks pass to avoid disappearing
-		// rows when the user dismisses an alert and corrects their input.
-		$form.find('.tpfw-order-row').each(function () {
+		var hasBlank = $rows.filter(function() {
+			var qty   = ($(this).find('.tpfw-qty-input').val() || '').trim();
+			var color = ($(this).find('.tpfw-color-select').val() || '').trim();
+			return !qty && !color;
+		}).length > 0;
+
+		var $last    = $rows.last();
+		var lastQty  = ($last.find('.tpfw-qty-input').val() || '').trim();
+
+		if (lastQty && !hasBlank) {
+			var $tbody = $form.find('.tpfw-order-rows');
+			var idx    = $rows.length;
+			var $clone = $last.clone();
+
+			$clone.find('.tpfw-qty-input')
+				.val('')
+				.attr('name', 'tpfw_order_rows[' + idx + '][quantity]');
+			$clone.find('.tpfw-color-select')
+				.val('')
+				.attr('name', 'tpfw_order_rows[' + idx + '][color]');
+			$clone.find('.tpfw-custom-select').each(function(di) {
+				$(this).val('').attr('name', 'tpfw_order_rows[' + idx + '][custom][' + di + ']');
+			});
+
+			$tbody.append($clone);
+		}
+	}
+
+	function tpfwUpdatePrices($form) {
+		var $iface   = $form.closest('.tpfw-pricing-interface');
+		var tiers    = JSON.parse($iface.attr('data-pricing-table') || '[]');
+		var symbol   = $iface.attr('data-currency-symbol') || '$';
+		var totalQty = 0;
+
+		$form.find('.tpfw-order-row').each(function() {
+			totalQty += parseInt($(this).find('.tpfw-qty-input').val(), 10) || 0;
+		});
+
+		var tierPrice = 0;
+		for (var i = 0; i < tiers.length; i++) {
+			if (totalQty >= tiers[i].quantity) {
+				tierPrice = parseFloat(tiers[i].price) || 0;
+			}
+		}
+
+		var grandTotal = 0;
+		$form.find('.tpfw-order-row').each(function() {
+			var qty = parseInt($(this).find('.tpfw-qty-input').val(), 10) || 0;
+			if (qty <= 0) { return; }
+
+			var optionsTotal = 0;
+			$(this).find('.tpfw-custom-select').each(function() {
+				var p = parseFloat($(this).find(':selected').attr('data-price')) || 0;
+				optionsTotal += p;
+			});
+
+			grandTotal += qty * (tierPrice + optionsTotal);
+		});
+
+		var $summary = $form.find('.tpfw-price-summary');
+		if (totalQty > 0 && tierPrice > 0) {
+			$summary.text('Estimated total: ' + symbol + grandTotal.toFixed(2)).show();
+		} else {
+			$summary.hide();
+		}
+	}
+
+	$(document).on('input change', '.tpfw-qty-input', function() {
+		var $form = $(this).closest('.tpfw-order-form');
+		if ($form.length) { tpfwEnsureRow($form); tpfwUpdatePrices($form); }
+	});
+
+	$(document).on('change', '.tpfw-color-select', function() {
+		var $form = $(this).closest('.tpfw-order-form');
+		if ($form.length) { tpfwEnsureRow($form); }
+	});
+
+	$(document).on('change', '.tpfw-custom-select', function() {
+		var $form = $(this).closest('.tpfw-order-form');
+		if ($form.length) { tpfwUpdatePrices($form); }
+	});
+
+	$(document).on('submit', '.tpfw-order-form', function(e) {
+		var $form            = $(this);
+		var $interface       = $form.closest('.tpfw-pricing-interface');
+		var minimumQuantity  = parseInt($interface.data('min-quantity'), 10) || 0;
+		var totalQuantity    = 0;
+		var hasAtLeastOneRow = false;
+		var missingColor     = false;
+		var missingRequired  = false;
+		var missingRequiredLabel = '';
+
+		$form.find('.tpfw-order-row').each(function() {
 			var qty   = ($(this).find('.tpfw-qty-input').val() || '').trim();
 			var color = ($(this).find('.tpfw-color-select').val() || '').trim();
 
@@ -64,32 +147,48 @@ jQuery(function ($) {
 				hasAtLeastOneRow = true;
 				totalQuantity += n;
 				if (!color) { missingColor = true; }
+
+				$(this).find('.tpfw-custom-select[data-required="1"]').each(function() {
+					if (!($(this).val() || '').trim()) {
+						missingRequired = true;
+						missingRequiredLabel = $(this).closest('.tpfw-select-wrap').find('.tpfw-select-label').text().replace('*', '').trim();
+					}
+				});
 			}
 		});
 
 		if (!hasAtLeastOneRow) {
+			e.preventDefault();
 			window.alert('Please fill out the Qty.');
-			return false;
+			return;
 		}
-
 		if (missingColor) {
+			e.preventDefault();
 			window.alert('Please select a color for each row.');
-			return false;
+			return;
 		}
-
+		if (missingRequired) {
+			e.preventDefault();
+			window.alert('Please select an option for "' + missingRequiredLabel + '".');
+			return;
+		}
 		if (totalQuantity < minimumQuantity) {
+			e.preventDefault();
 			window.alert('The total quantity must be at least ' + minimumQuantity + '.');
-			return false;
+			return;
 		}
 
-		// All checks passed — strip blank rows before the form posts.
-		$form.find('.tpfw-order-row').each(function () {
+		// Strip blank rows before posting.
+		$form.find('.tpfw-order-row').each(function() {
 			var qty   = ($(this).find('.tpfw-qty-input').val() || '').trim();
 			var color = ($(this).find('.tpfw-color-select').val() || '').trim();
 			if (!qty && !color) { $(this).remove(); }
 		});
 
-		return true;
+		var $btn = $form.find('[type="submit"]');
+		if ($btn.length) {
+			$btn.prop('disabled', true).addClass('tpfw-loading').text('Adding to cart…');
+		}
 	});
 
 	// =========================================================================

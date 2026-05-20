@@ -70,6 +70,42 @@ span.description {
 	margin: 10px !important;
 }
 
+// Custom dropdown groups editor
+.tpfw-custom-dropdowns-wrap {
+	max-width: 96%;
+	margin: 10px;
+}
+
+.tpfw-dropdown-group {
+	border: 1px solid #ddd;
+	padding: 12px;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	background: #fafafa;
+}
+
+.tpfw-dropdown-group-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+	flex-wrap: wrap;
+}
+
+.tpfw-dropdown-required-label {
+	font-weight: normal;
+	white-space: nowrap;
+}
+
+.tpfw-dropdown-group-header .tpfw-remove-dropdown-group {
+	margin-left: auto;
+}
+
+.tpfw-dropdown-options-table {
+	max-width: 100%;
+	margin-bottom: 4px;
+}
+
 @media screen and (max-width: 782px) {
 	.wrap.woocommerce {
 		flex-direction: column;

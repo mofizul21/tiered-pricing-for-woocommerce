@@ -280,6 +280,44 @@ body.tpfw-modal-open {
 	}
 }
 
+// Order form — options column (color + custom dropdowns stacked)
+.tpfw-order-options {
+	min-width: 180px;
+}
+
+.tpfw-color-select,
+.tpfw-custom-select {
+	width: 100%;
+	max-width: 220px;
+	display: block;
+}
+
+.tpfw-select-wrap {
+	margin-top: 8px;
+}
+
+.tpfw-select-label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #555;
+	margin-bottom: 3px;
+
+	span {
+		color: #c00;
+	}
+}
+
+// Price summary shown below the order table
+.tpfw-price-summary {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #333;
+	padding: 10px 0;
+	margin-top: 4px;
+	border-top: 1px solid #e0e0e0;
+}
+
 .tpfw-upload-status {
 	display: block;
 	margin-top: 0.4em;
