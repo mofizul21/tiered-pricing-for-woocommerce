@@ -2,7 +2,7 @@
 /**
  * Plugin Name:          Tiered Pricing for WooCommerce
  * Description:          Offer tiered, quantity-based pricing on WooCommerce products. Automatically adjusts the per-unit price as customers increase quantity — for example: $5.00 each for 10 units, $4.00 each for 30 units. Supports unlimited pricing tiers per product.
- * Version:              1.0.0
+ * Version:              1.0.1
  * Author:               Mofizul Islam
  * Author URI:           https://mofizul.com/
  * Text Domain:          tiered-pricing-for-woocommerce
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const TPFW_VERSION = '1.0.0';
+const TPFW_VERSION = '1.0.1';
 const TPFW_TEXT_DOMAIN = 'tiered-pricing-for-woocommerce';
 
 if ( ! defined( 'TPFW_PLUGIN_FILE' ) ) {

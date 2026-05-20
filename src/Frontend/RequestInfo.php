@@ -165,6 +165,7 @@ class RequestInfo {
 
 		$admin_email  = get_option( 'admin_email' );
 		$site_name    = get_bloginfo( 'name' );
+		$site_host    = (string) wp_parse_url( get_site_url(), PHP_URL_HOST );
 		$product_url  = $product_id ? get_permalink( $product_id ) : '';
 		$subject      = sprintf( '[%s] Product Info Request: %s', $site_name, $product_name );
 
@@ -194,9 +195,13 @@ class RequestInfo {
 			$lines[] = $additional_info;
 		}
 
-		$body    = implode( "\n", $lines );
+		$body = implode( "\n", $lines );
+
+		// From must be on the same domain as the server so SPF passes on shared
+		// hosting. Reply-To is set to the submitter so replying goes to them.
 		$headers = [
 			'Content-Type: text/plain; charset=UTF-8',
+			'From: ' . $site_name . ' <noreply@' . $site_host . '>',
 			'Reply-To: ' . $full_name . ' <' . $email . '>',
 		];
 

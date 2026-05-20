@@ -6,6 +6,15 @@
 	border-radius: 5px;
 }
 
+// Pricing table wrapper — scroll horizontally on small screens instead of the whole page
+.tpfw-pricing-table-wrapper {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	width: 100%;
+	max-width: 100%;
+	display: block;
+}
+
 // Cart — locked quantity display (tpfw items are not editable in the cart)
 .tpfw-qty-locked {
 	display: inline-block;
