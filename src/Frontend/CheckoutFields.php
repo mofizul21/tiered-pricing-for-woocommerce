@@ -28,39 +28,38 @@ class CheckoutFields {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Register and enqueue the shared frontend script and stylesheet.
-	 *
-	 * This is intentionally the canonical registration point for
-	 * tpfw-frontend-script on the frontend. Admin.php only runs in wp-admin
-	 * context, so this method owns registration for all frontend pages.
-	 * On the checkout page it also localises tpfwCheckout for the logo uploader.
+	 * Enqueue the shared frontend script and stylesheet on WooCommerce pages only.
+	 * Both use filemtime() as the version so the browser always fetches the latest
+	 * file whenever it changes on disk. On the checkout page, also localises
+	 * tpfwCheckout for the logo uploader.
 	 *
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-		// Register and enqueue the shared frontend script on all pages.
-		// Admin::enqueue_frontend_assets() only runs in wp-admin context,
-		// so we own the registration here for all frontend pages.
-		if ( ! wp_script_is( 'tpfw-frontend-script', 'registered' ) ) {
-			wp_register_script(
-				'tpfw-frontend-script',
-				plugins_url( 'assets/js/frontend.js', TPFW_PLUGIN_FILE ),
-				[ 'jquery' ],
-				TPFW_VERSION,
-				true
-			);
+		if ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
+			return;
 		}
-		wp_enqueue_script( 'tpfw-frontend-script' );
 
 		if ( ! wp_style_is( 'tpfw-frontend-style', 'registered' ) ) {
 			wp_register_style(
 				'tpfw-frontend-style',
 				plugins_url( 'assets/css/frontend.css', TPFW_PLUGIN_FILE ),
 				[],
-				TPFW_VERSION
+				filemtime( TPFW_PLUGIN_PATH . 'assets/css/frontend.css' )
 			);
 		}
 		wp_enqueue_style( 'tpfw-frontend-style' );
+
+		if ( ! wp_script_is( 'tpfw-frontend-script', 'registered' ) ) {
+			wp_register_script(
+				'tpfw-frontend-script',
+				plugins_url( 'assets/js/frontend.js', TPFW_PLUGIN_FILE ),
+				[ 'jquery' ],
+				filemtime( TPFW_PLUGIN_PATH . 'assets/js/frontend.js' ),
+				true
+			);
+		}
+		wp_enqueue_script( 'tpfw-frontend-script' );
 
 		if ( ! is_checkout() ) {
 			return;

@@ -77,10 +77,10 @@ final class Plugin {
         if ( is_admin() ) {
             new Menus();
             new Admin();
+            new ProductSettings();
         }
 
 		new ProductColors();
-		new ProductSettings();
 		new WooCommerceStarter();
         new PriceFilter();
         new ProductInfo();

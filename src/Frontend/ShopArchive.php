@@ -16,6 +16,7 @@ class ShopArchive {
 		add_action( 'wp_loaded', [ $this, 'block_url_add_to_cart' ], 5 );
 		add_action( 'woocommerce_before_add_to_cart_form', [ $this, 'quickview_buffer_start' ], 5 );
 		add_action( 'woocommerce_after_add_to_cart_form', [ $this, 'quickview_buffer_end' ], 999 );
+		add_filter( 'woolentor_filterable_shortcode_products_query', [ $this, 'filter_search_to_title_and_category' ], 20, 2 );
 	}
 
 	/**
@@ -110,6 +111,103 @@ class ShopArchive {
 		echo '<a href="' . esc_url( get_permalink( $product->get_id() ) ) . '" class="button alt tpfw-purchase-btn">';
 		echo esc_html__( 'Purchase', 'tiered-pricing-for-woocommerce' );
 		echo '</a>';
+	}
+
+	/**
+	 * Replace the `s` query arg in ShopLentor's filterable query with an explicit
+	 * post__in list so results are limited to title and category matches only.
+	 *
+	 * Fires at priority 20, after WLPF\Frontend\Query\Shortcode (priority 10) has
+	 * already added `s` to the query args.  Removing `s` also changes the md5 key
+	 * used by WC_Shortcode_Products for its transient cache, so stale cached results
+	 * that include description matches are never returned.
+	 *
+	 * @param array $query_args  Accumulated WP_Query args.
+	 * @param array $filter_args ShopLentor filter data.
+	 * @return array
+	 */
+	public function filter_search_to_title_and_category( array $query_args, array $filter_args ): array {
+		if ( empty( $query_args['s'] ) ) {
+			return $query_args;
+		}
+
+		$search = (string) $query_args['s'];
+		unset( $query_args['s'] );
+
+		$ids = $this->get_products_by_title_and_category( $search );
+
+		if ( empty( $ids ) ) {
+			$query_args['post__in'] = [ 0 ];
+		} else {
+			$existing = isset( $query_args['post__in'] ) ? array_filter( (array) $query_args['post__in'] ) : [];
+			if ( empty( $existing ) ) {
+				$query_args['post__in'] = $ids;
+			} else {
+				$intersect = array_values( array_intersect( $ids, $existing ) );
+				$query_args['post__in'] = $intersect ?: [ 0 ];
+			}
+		}
+
+		return $query_args;
+	}
+
+	/**
+	 * Return IDs of published products whose title contains every search word
+	 * (AND) or whose product_cat name matches the full phrase (OR).
+	 *
+	 * @param string $search Raw search string.
+	 * @return int[]
+	 */
+	private function get_products_by_title_and_category( string $search ): array {
+		global $wpdb;
+
+		$terms = $this->split_search_terms( $search );
+
+		$title_clauses = array_map(
+			fn( string $term ) => $wpdb->prepare(
+				'p.post_title LIKE %s',
+				'%' . $wpdb->esc_like( $term ) . '%'
+			),
+			$terms
+		);
+
+		$cat_clause = $wpdb->prepare(
+			"p.ID IN (
+				SELECT tr.object_id
+				FROM {$wpdb->term_relationships} tr
+				INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+				INNER JOIN {$wpdb->terms} t ON tt.term_id = t.term_id
+				WHERE tt.taxonomy = 'product_cat'
+				AND t.name LIKE %s
+			)",
+			'%' . $wpdb->esc_like( $search ) . '%'
+		);
+
+		$title_sql = implode( ' AND ', $title_clauses );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$ids = $wpdb->get_col(
+			"SELECT p.ID
+			 FROM {$wpdb->posts} p
+			 WHERE p.post_type = 'product'
+			   AND p.post_status = 'publish'
+			   AND ( ({$title_sql}) OR ({$cat_clause}) )"
+		);
+
+		return array_map( 'intval', $ids ?: [] );
+	}
+
+	/**
+	 * Split a raw search string into individual words, ignoring quoted phrases.
+	 *
+	 * @param string $raw Raw search string.
+	 * @return string[]
+	 */
+	private function split_search_terms( string $raw ): array {
+		$plain = preg_replace( '/"[^"]*"/', '', $raw );
+		$terms = preg_split( '/\s+/', trim( (string) $plain ), -1, PREG_SPLIT_NO_EMPTY );
+
+		return $terms ?: [ $raw ];
 	}
 
 	/**
